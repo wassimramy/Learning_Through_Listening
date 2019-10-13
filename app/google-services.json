@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "702897035289",
+    "firebase_url": "https://learning-through-listening.firebaseio.com",
+    "project_id": "learning-through-listening",
+    "storage_bucket": "learning-through-listening.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702897035289:android:350860ca80be223866b288",
+        "android_client_info": {
+          "package_name": "com.wrkhalil.learningthroughlistening"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "702897035289-d3tte5pcnn3teuqf19jndjlg172j50vc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEeZH8bh1UuMLu7EDEci-kVmtvYVyVYvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "702897035289-d3tte5pcnn3teuqf19jndjlg172j50vc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
