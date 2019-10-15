@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "702897035289-l210qn4g17ep1u0b5qupgfr42j44cvdc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrkhalil.learningthroughlistening",
+            "certificate_hash": "e8bee22e07b3e5fe2fedfd88cdfa372b80617f50"
+          }
+        },
+        {
           "client_id": "702897035289-d3tte5pcnn3teuqf19jndjlg172j50vc.apps.googleusercontent.com",
           "client_type": 3
         }
