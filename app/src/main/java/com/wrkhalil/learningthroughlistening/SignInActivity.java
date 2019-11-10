@@ -25,6 +25,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class SignInActivity extends AppCompatActivity {
@@ -44,6 +49,18 @@ public class SignInActivity extends AppCompatActivity {
 
         //Buttons
         startANewGame = findViewById(R.id.startANewGameButton);
+
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("server/saving-data/fireblog");
+
+        DatabaseReference usersRef = ref.child("users");
+
+        Map<String, User> users = new HashMap<>();
+        users.put("alanisawesome", new User("June 23, 1992", "Alan Turing"));
+        users.put("gracehop", new User("December 9, 1906", "Grace Hopper"));
+
+        usersRef.setValue(users);
     }
 
     public void checkGoogleSignInStatus() {
