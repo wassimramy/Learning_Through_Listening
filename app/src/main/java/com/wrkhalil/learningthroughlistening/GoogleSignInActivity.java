@@ -51,7 +51,7 @@ public class GoogleSignInActivity extends MainActivity implements
         // Button listeners
         findViewById(R.id.signInButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
-        findViewById(R.id.disconnectButton).setOnClickListener(this);
+        findViewById(R.id.backButton).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -75,6 +75,13 @@ public class GoogleSignInActivity extends MainActivity implements
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        /*
+        Intent intent = getIntent();
+        String status = "None";
+        status = intent.getStringExtra("Status");
+        if (status.equals(""))
+         */
+
         updateUI(currentUser);
     }
     // [END on_start_check_user]
@@ -155,18 +162,10 @@ public class GoogleSignInActivity extends MainActivity implements
                 });
     }
 
-    private void revokeAccess() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google revoke access
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
+    private void goBackToSignInActivity() {
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
     private void updateUI(FirebaseUser user) {
@@ -175,7 +174,7 @@ public class GoogleSignInActivity extends MainActivity implements
             //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             mStatusTextView.setText(getString(R.string.google_status_fmt, user.getDisplayName()));
             //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getPhoneNumber()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getEmail()));
 
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
@@ -195,8 +194,8 @@ public class GoogleSignInActivity extends MainActivity implements
             signIn();
         } else if (i == R.id.signOutButton) {
             signOut();
-        } else if (i == R.id.disconnectButton) {
-            revokeAccess();
+        } else if (i == R.id.backButton) {
+            goBackToSignInActivity();
         }
     }
 }
