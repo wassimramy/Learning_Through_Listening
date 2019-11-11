@@ -108,13 +108,15 @@ public class SignInActivity extends AppCompatActivity {
             MainActivity.operatingUser = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail());
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-            DatabaseReference usersRef = ref.child(currentUser.getUid()+"/score");
+            //DatabaseReference usersRef = ref.child(currentUser.getUid()+"/score");
+            DatabaseReference usersRef = ref.child(currentUser.getUid());
 
             ValueEventListener postListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // Get Post object and use the values to update the UI
-                    MainActivity.operatingUser.score  = dataSnapshot.getValue(int.class);
+                    //MainActivity.operatingUser.score  = dataSnapshot.getValue(int.class);
+                    MainActivity.operatingUser  = dataSnapshot.getValue(User.class);
                     //Log.d("Operating User ID", MainActivity.operatingUser.fireBaseID);
                     Log.d("Operating User Score", MainActivity.operatingUser.score + "");
                     // ...
