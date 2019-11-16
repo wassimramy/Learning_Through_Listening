@@ -151,9 +151,4 @@ public class SignInActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public void signInWithLocal(View view) {
-        Intent intent = new Intent(this, FacebookLoginActivity.class);
-        startActivity(intent);
-    }
-
 }
