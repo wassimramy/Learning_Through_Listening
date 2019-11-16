@@ -25,6 +25,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class SignInActivity extends AppCompatActivity {
@@ -44,6 +52,8 @@ public class SignInActivity extends AppCompatActivity {
 
         //Buttons
         startANewGame = findViewById(R.id.startANewGameButton);
+
+
     }
 
     public void checkGoogleSignInStatus() {
@@ -73,14 +83,14 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null){
-            Log.d("Google Sign In", "No user is logged in");
-
+            Log.d("Sign In", "No user is logged in");
             startANewGame.setVisibility(View.GONE);
-
             titleTextView.setText("Choose Sign-in Method");
+            MainActivity.operatingUser = null;
+
         }
         else{
-            Log.d("Google Sign In", "A user is logged in");
+            Log.d("Sign In", "A user is logged in");
             startANewGame.setVisibility(View.VISIBLE);
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.placeholder(R.drawable.login_vector);
@@ -94,6 +104,36 @@ public class SignInActivity extends AppCompatActivity {
                     .into(loginAvatar);
 
             titleTextView.setText("Welcome " + currentUser.getDisplayName() + "!");
+
+            MainActivity.operatingUser = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail());
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
+            //DatabaseReference usersRef = ref.child(currentUser.getUid()+"/score");
+            DatabaseReference usersRef = ref.child(currentUser.getUid());
+
+            ValueEventListener postListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get Post object and use the values to update the UI
+                    //MainActivity.operatingUser.score  = dataSnapshot.getValue(int.class);
+                    MainActivity.operatingUser  = dataSnapshot.getValue(User.class);
+                    //Log.d("Operating User ID", MainActivity.operatingUser.fireBaseID);
+                    Log.d("Operating User Score", MainActivity.operatingUser.score + "");
+                    // ...
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Getting Post failed, log a message
+                    //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                    // ...
+                }
+
+            };
+            usersRef.addValueEventListener(postListener);
+            //MainActivity.operatingUser =  usersRef.get
+            //usersRef.setValue(operatingUser.toMap());
+            //MainActivity.operatingUser.toMap();
         }
     }
 
@@ -109,11 +149,6 @@ public class SignInActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GoogleSignInActivity.class);
         startActivity(intent);
         this.finish();
-    }
-
-    public void signInWithLocal(View view) {
-        Intent intent = new Intent(this, FacebookLoginActivity.class);
-        startActivity(intent);
     }
 
 }
