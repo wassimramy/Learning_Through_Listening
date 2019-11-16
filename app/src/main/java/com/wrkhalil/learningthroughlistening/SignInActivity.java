@@ -52,27 +52,13 @@ public class SignInActivity extends AppCompatActivity {
 
         //Buttons
         startANewGame = findViewById(R.id.startANewGameButton);
-
-
     }
 
-    public void checkGoogleSignInStatus() {
-
-        GoogleSignInClient mGoogleSignInClient;
+    public void checkSignInStatus() {
 
         // [START declare_auth]
         FirebaseAuth mAuth;
         // [END declare_auth]
-
-        // [START config_signin]
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        // [END config_signin]
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // [START initialize_auth]
         // Initialize Firebase Auth
@@ -84,71 +70,69 @@ public class SignInActivity extends AppCompatActivity {
 
         if (currentUser == null){
             Log.d("Sign In", "No user is logged in");
-            startANewGame.setVisibility(View.GONE);
-            titleTextView.setText("Choose Sign-in Method");
             MainActivity.operatingUser = null;
+            updateUIForLoggedOutUser();
 
         }
         else{
             Log.d("Sign In", "A user is logged in");
-            startANewGame.setVisibility(View.VISIBLE);
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions.placeholder(R.drawable.login_vector);
-            requestOptions.error(R.drawable.login_vector);
-            requestOptions.circleCrop();
-
-            Glide
-                    .with(this)
-                    .setDefaultRequestOptions(requestOptions)
-                    .load(currentUser.getPhotoUrl())
-                    .into(loginAvatar);
-
-            titleTextView.setText("Welcome " + currentUser.getDisplayName() + "!");
-
-            MainActivity.operatingUser = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail());
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-            //DatabaseReference usersRef = ref.child(currentUser.getUid()+"/score");
-            DatabaseReference usersRef = ref.child(currentUser.getUid());
-
-            ValueEventListener postListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // Get Post object and use the values to update the UI
-                    //MainActivity.operatingUser.score  = dataSnapshot.getValue(int.class);
-                    MainActivity.operatingUser  = dataSnapshot.getValue(User.class);
-                    //Log.d("Operating User ID", MainActivity.operatingUser.fireBaseID);
-                    Log.d("Operating User Score", MainActivity.operatingUser.score + "");
-                    // ...
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    // Getting Post failed, log a message
-                    //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                    // ...
-                }
-
-            };
-            usersRef.addValueEventListener(postListener);
-            //MainActivity.operatingUser =  usersRef.get
-            //usersRef.setValue(operatingUser.toMap());
-            //MainActivity.operatingUser.toMap();
+            updateUIForLoggedInUser(currentUser);
+            fetchUserDataFromFirebase(currentUser);
         }
     }
 
+    public void updateUIForLoggedOutUser() {
+        startANewGame.setVisibility(View.GONE);
+        titleTextView.setText("Sign-in using Google");
+    }
+
+    public void updateUIForLoggedInUser(FirebaseUser currentUser) {
+        startANewGame.setVisibility(View.VISIBLE);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.drawable.login_vector);
+        requestOptions.error(R.drawable.login_vector);
+        requestOptions.circleCrop();
+
+        Glide
+                .with(this)
+                .setDefaultRequestOptions(requestOptions)
+                .load(currentUser.getPhotoUrl())
+                .into(loginAvatar);
+
+        titleTextView.setText("Welcome " + currentUser.getDisplayName() + "!");
+    }
+
+    public void fetchUserDataFromFirebase(FirebaseUser currentUser) {
+        MainActivity.operatingUser = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail());
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
+        DatabaseReference usersRef = ref.child(currentUser.getUid());
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                MainActivity.operatingUser  = dataSnapshot.getValue(User.class);
+                Log.d("Operating User Score", MainActivity.operatingUser.score + "");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        usersRef.addValueEventListener(postListener);
+    }
+
     public void onResume() {
-
         super.onResume();
-        checkGoogleSignInStatus();
-
+        checkSignInStatus();
     }
 
     public void signInWithGoogle(View view) {
-
         Intent intent = new Intent(this, GoogleSignInActivity.class);
         startActivity(intent);
         this.finish();
     }
-
 }

@@ -20,8 +20,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
@@ -51,6 +54,7 @@ public class GoogleSignInActivity extends MainActivity implements
 
         // Button listeners
         findViewById(R.id.signInButton).setOnClickListener(this);
+        findViewById(R.id.backWithoutSignInButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.backButton).setOnClickListener(this);
 
@@ -170,6 +174,33 @@ public class GoogleSignInActivity extends MainActivity implements
         this.finish();
     }
 
+    private void checkIfUserExists(final FirebaseUser user){
+
+        MainActivity.operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
+        final DatabaseReference usersRef = ref.child(user.getUid());
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild(user.getUid())) {
+                    MainActivity.operatingUser  = snapshot.child(user.getUid()).getValue(User.class);
+                    Log.d("Account Info Fetched:", MainActivity.operatingUser.fullName + " " + MainActivity.operatingUser.score);
+                }
+                else{
+                    operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
+                    usersRef.setValue(operatingUser.toMap());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
@@ -178,22 +209,18 @@ public class GoogleSignInActivity extends MainActivity implements
             //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getPhoneNumber()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getEmail()));
 
-            findViewById(R.id.signInButton).setVisibility(View.GONE);
-            findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
+            findViewById(R.id.signInAndBack).setVisibility(View.GONE);
+            findViewById(R.id.signOutAndBack).setVisibility(View.VISIBLE);
 
+            checkIfUserExists(user);
 
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-            DatabaseReference usersRef = ref.child(user.getUid());
-            operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
-            usersRef.setValue(operatingUser.toMap());
 
         } else {
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);
 
-            findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
+            findViewById(R.id.signInAndBack).setVisibility(View.VISIBLE);
+            findViewById(R.id.signOutAndBack).setVisibility(View.GONE);
         }
     }
 
@@ -204,7 +231,7 @@ public class GoogleSignInActivity extends MainActivity implements
             signIn();
         } else if (i == R.id.signOutButton) {
             signOut();
-        } else if (i == R.id.backButton) {
+        } else if (i == R.id.backButton || i == R.id.backWithoutSignInButton) {
             goBackToSignInActivity();
         }
     }
