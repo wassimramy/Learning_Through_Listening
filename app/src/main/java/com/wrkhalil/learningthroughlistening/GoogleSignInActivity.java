@@ -196,7 +196,6 @@ public class GoogleSignInActivity extends MainActivity implements
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
@@ -213,8 +212,6 @@ public class GoogleSignInActivity extends MainActivity implements
             findViewById(R.id.signOutAndBack).setVisibility(View.VISIBLE);
 
             checkIfUserExists(user);
-
-
         } else {
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);

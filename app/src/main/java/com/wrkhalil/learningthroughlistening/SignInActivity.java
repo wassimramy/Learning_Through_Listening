@@ -128,6 +128,7 @@ public class SignInActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         checkSignInStatus();
+        Video video = new Video ("YOfa1xGWJCc");
     }
 
     public void signInWithGoogle(View view) {
