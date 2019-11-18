@@ -24,10 +24,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+import static com.wrkhalil.learningthroughlistening.SignInActivity.videoList;
+
 
 public class ChooseGameActivity extends AppCompatActivity {
 
-    public List<Video> videoList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         RecyclerView recyclerView;
@@ -45,9 +46,19 @@ public class ChooseGameActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        //populateVideoListFromFirebase();
+        //Retrieve the position of the item clicked in the recycleView and send it to startItemEditActivity to show the respective item information
+        VideoAdapter videoAdapter = new VideoAdapter(this, videoList, position -> startShowPictureActivity(position));
+        recyclerView.setAdapter(videoAdapter); //Update the recyclerView
     }
 
+    /* Called when the user taps on an item in the recycler view */
+    private void startShowPictureActivity(int position) {
+        /*
+        Intent intent = new Intent(this, ShowPictureActivity.class);
+        intent.putExtra("URI Value", list.get(position).itemPath); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        startActivity(intent); //Start the activity
+         */
+    }
 
     public void onResume() {
         super.onResume();

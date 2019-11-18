@@ -22,6 +22,9 @@
         <activity
             android:name=".GoogleSignInActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ChooseGameActivity"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 

@@ -46,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements
 
     private TextView titleTextView;
     private ImageView loginAvatar;
-    public List<Video> videoList = new ArrayList<>();
+    public static List<Video> videoList = new ArrayList<>();
 
 
     @Override
@@ -157,7 +157,8 @@ public class SignInActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.startANewGame) {
+        if (i == R.id.startANewGameButton) {
+            Log.d("Start a new game", "Click received");
             startANewGame();
         } else if (i == R.id.signInWithGoogleButton) {
             signInWithGoogle();

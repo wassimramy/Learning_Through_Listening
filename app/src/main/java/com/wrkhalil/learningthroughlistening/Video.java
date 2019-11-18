@@ -129,4 +129,12 @@ public class Video {
         };
         videoRef.addValueEventListener(postListener);
     }
+
+    public String getTitle (){
+        return title;
+    }
+
+    public String getThumbnailURL (){
+        return thumbnailURL;
+    }
 }
