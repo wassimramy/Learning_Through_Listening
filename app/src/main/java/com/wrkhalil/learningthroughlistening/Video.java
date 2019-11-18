@@ -21,14 +21,19 @@ import org.json.JSONObject;
 
 public class Video {
 
-    private String id;
+    public String id;
     private String title;
     private String thumbnailURL;
     private String closedCaptions;
-    private int plays;
+    public int plays;
 
-    Video (String id){
+    Video (){
+
+    }
+
+    Video (String id, int plays){
         this.id = id;
+        this.plays = plays;
 
         getYouTubeData(id);
         getClosedCaptions(id);
@@ -106,7 +111,7 @@ public class Video {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
-        DatabaseReference usersRef = ref.child(id+"/plays");
+        DatabaseReference videoRef = ref.child(id+"/plays");
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -122,6 +127,6 @@ public class Video {
                 Log.w("loadPost:onCancelled", databaseError.toException());
             }
         };
-        usersRef.addValueEventListener(postListener);
+        videoRef.addValueEventListener(postListener);
     }
 }

@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,21 +27,27 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
-public class SignInActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity implements
+        View.OnClickListener {
 
     private TextView titleTextView;
     private ImageView loginAvatar;
-    private Button startANewGame;
+    public List<Video> videoList = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +59,7 @@ public class SignInActivity extends AppCompatActivity {
         loginAvatar = findViewById(R.id.loginAvatar);
 
         //Buttons
-        startANewGame = findViewById(R.id.startANewGameButton);
+        findViewById(R.id.startANewGameButton).setOnClickListener(this);
     }
 
     public void checkSignInStatus() {
@@ -82,12 +90,12 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void updateUIForLoggedOutUser() {
-        startANewGame.setVisibility(View.GONE);
+        findViewById(R.id.startANewGameButton).setVisibility(View.GONE);
         titleTextView.setText("Sign-in using Google");
     }
 
     public void updateUIForLoggedInUser(FirebaseUser currentUser) {
-        startANewGame.setVisibility(View.VISIBLE);
+        findViewById(R.id.startANewGameButton).setVisibility(View.VISIBLE);
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.login_vector);
         requestOptions.error(R.drawable.login_vector);
@@ -128,12 +136,73 @@ public class SignInActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         checkSignInStatus();
-        Video video = new Video ("YOfa1xGWJCc");
+        //Video video = new Video ("YOfa1xGWJCc");
+        populateVideoListFromFirebase();
+
     }
 
-    public void signInWithGoogle(View view) {
+    public void signInWithGoogle() {
         Intent intent = new Intent(this, GoogleSignInActivity.class);
         startActivity(intent);
         this.finish();
+    }
+
+    public void startANewGame() {
+        Intent intent = new Intent(this, ChooseGameActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.startANewGame) {
+            startANewGame();
+        } else if (i == R.id.signInWithGoogleButton) {
+            signInWithGoogle();
+        }
+    }
+
+    public void populateVideoListFromFirebase() {
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
+        //DatabaseReference usersRef = ref.child();
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    Log.d("Message From Firebase", s + "");
+                    Video video = dataSnapshot.getValue(Video.class);
+                    Video videoParsed = new Video(video.id, video.plays);
+                    videoList.add(videoParsed);
+                    for (int i = 0 ; i < videoList.size() ; i++){
+                        Log.d("videoList[" + i +"]", videoList.get(i).id + " ");
+                    }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        ref.addChildEventListener(childEventListener);
     }
 }

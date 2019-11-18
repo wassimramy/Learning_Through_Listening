@@ -22,14 +22,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 
 public class ChooseGameActivity extends AppCompatActivity {
 
+    public List<Video> videoList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         RecyclerView recyclerView;
         RecyclerView.LayoutManager layoutManager;
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_game);
         recyclerView = findViewById(R.id.my_recycler_view);
@@ -42,11 +45,14 @@ public class ChooseGameActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
+        //populateVideoListFromFirebase();
     }
 
 
     public void onResume() {
         super.onResume();
     }
+
+
 
 }
