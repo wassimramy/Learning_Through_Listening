@@ -60,6 +60,7 @@ public class SignInActivity extends AppCompatActivity implements
 
         //Buttons
         findViewById(R.id.startANewGameButton).setOnClickListener(this);
+        findViewById(R.id.signInWithGoogleButton).setOnClickListener(this);
     }
 
     public void checkSignInStatus() {
