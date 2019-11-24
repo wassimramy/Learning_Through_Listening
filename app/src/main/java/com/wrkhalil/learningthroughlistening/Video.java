@@ -36,15 +36,19 @@ public class Video {
         this.plays = plays;
 
         getYouTubeData(id);
-        getClosedCaptions(id);
+        getClosedCaptionsData(id);
         getFirebaseData(id);
     }
 
-    public void getClosedCaptions (String id){
+    public String getClosedCaptions(){
+        return closedCaptions;
+    }
+
+    public void getClosedCaptionsData (String id){
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(BaseApplication.getAppContext());
-        String url ="https://www.nitrxgen.net/youtube_cc/" + id + "/0.vtt";
+        String url ="https://www.nitrxgen.net/youtube_cc/" + id + "/0.srt";
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,

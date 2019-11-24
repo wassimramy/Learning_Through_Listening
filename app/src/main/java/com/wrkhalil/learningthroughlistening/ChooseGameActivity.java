@@ -53,11 +53,9 @@ public class ChooseGameActivity extends AppCompatActivity {
 
     /* Called when the user taps on an item in the recycler view */
     private void startShowPictureActivity(int position) {
-        /*
-        Intent intent = new Intent(this, ShowPictureActivity.class);
-        intent.putExtra("URI Value", list.get(position).itemPath); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        Intent intent = new Intent(this, PlayGameActivity.class);
+        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
         startActivity(intent); //Start the activity
-         */
     }
 
     public void onResume() {
