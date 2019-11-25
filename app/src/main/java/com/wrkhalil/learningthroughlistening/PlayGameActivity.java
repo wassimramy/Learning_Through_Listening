@@ -3,13 +3,13 @@ package com.wrkhalil.learningthroughlistening;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.TimedText;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.TextView;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
@@ -18,17 +18,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Locale;
 
-
-import android.util.Log;
 
 
 
 public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener {
     private static Handler handler = new Handler();
     private TextView txtDisplay;
-    private String videoID, videoThumbnailURL, videoClosedCaptions;
+    private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,10 +39,13 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         videoID = SignInActivity.videoList.get(position).id;
         videoThumbnailURL = SignInActivity.videoList.get(position).getThumbnailURL();
         videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptions();
+        videoTrackPath = SignInActivity.videoList.get(position).getTrackPath();
 
         txtDisplay = (TextView) findViewById(R.id.txtDisplay);
 
-        MediaPlayer player = MediaPlayer.create(this, R.raw.video);
+        Uri trackFileUri = Uri.parse(videoTrackPath);
+
+        MediaPlayer player = MediaPlayer.create(this, trackFileUri);
         try {
             player.addTimedTextSource(getSubtitleFile(R.raw.sub),
                     MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);

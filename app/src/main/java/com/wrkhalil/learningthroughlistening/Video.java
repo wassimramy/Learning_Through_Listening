@@ -2,22 +2,32 @@ package com.wrkhalil.learningthroughlistening;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 
 public class Video {
 
@@ -25,6 +35,7 @@ public class Video {
     private String title;
     private String thumbnailURL;
     private String closedCaptions;
+    private String trackPath;
     public int plays;
 
     Video (){
@@ -38,10 +49,50 @@ public class Video {
         getYouTubeData(id);
         getClosedCaptionsData(id);
         getFirebaseData(id);
+        getTrackData(id);
     }
 
     public String getClosedCaptions(){
         return closedCaptions;
+    }
+
+    public String getTrackPath(){
+        return trackPath;
+    }
+
+    public void getTrackData (String id){
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        // Create a storage reference from our app
+        StorageReference storageRef = storage.getReference();
+
+        // Create a reference to a file from a Google Cloud Storage URI
+        StorageReference gsReference = storage.getReferenceFromUrl("gs://learning-through-listening.appspot.com/server/saving-data/fireblog/videos/" + id + ".mp3");
+
+        File localFile = null;
+        try {
+            localFile = File.createTempFile("audio", "mp3");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        File finalLocalFile = localFile;
+        gsReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                // Local temp file has been created
+                Video.this.trackPath = finalLocalFile.getAbsolutePath();
+                Log.d("Fetching mp3 File", "Location on mobile device: " + finalLocalFile.getAbsolutePath());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+
+
     }
 
     public void getClosedCaptionsData (String id){
@@ -57,13 +108,13 @@ public class Video {
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
                         Video.this.closedCaptions = response;
-                        Log.d("Response:", response);
+                        Log.d("Response from nitrxgen:", "nitrxgen: " + response);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Video.this.closedCaptions = "Unavailable";
-                Log.d("Response:", "Unavailable");
+                Log.d("Response from nitrxgen:", "Unavailable");
             }
         });
 
