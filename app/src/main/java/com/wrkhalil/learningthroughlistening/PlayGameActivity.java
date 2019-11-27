@@ -43,7 +43,8 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
 
         videoID = SignInActivity.videoList.get(position).id;
         videoThumbnailURL = SignInActivity.videoList.get(position).getThumbnailURL();
-        videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptions();
+        SignInActivity.videoList.get(position).generateclosedCaption();
+        //videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptions();
         videoTrackPath = SignInActivity.videoList.get(position).getTrackPath();
 
         //Views
@@ -55,7 +56,10 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         pauseButton.setOnClickListener(this);
         findViewById(R.id.restartButton).setOnClickListener(this);
 
-        Uri trackFileUri = Uri.parse(videoTrackPath);
+        //Uri trackFileUri = Uri.parse(videoTrackPath);
+
+        /*
+
 
         player = MediaPlayer.create(this, trackFileUri);
         try {
@@ -74,6 +78,8 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
             Log.w("Subtitle Status", "Failed!");
             e.printStackTrace();
         }
+
+         */
 
     }
 
@@ -167,13 +173,13 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     // Pause The Game
     public void pauseGame() {
         pauseButton.setText("Start");
-        player.pause();
+        //player.pause();
     }
 
     // Start The Game
     public void startGame() {
         pauseButton.setText("Pause");
-        player.start();
+        //player.start();
     }
 
     // Restart The Game

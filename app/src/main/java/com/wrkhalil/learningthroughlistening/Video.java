@@ -36,9 +36,7 @@ public class Video {
     public String id;
     private String title;
     private String thumbnailURL;
-    private String closedCaptions;
-    private String closedCaptionsPlaintext;
-    private String missingClosedCaptions;
+    private ClosedCaption closedCaption;
     private String trackPath;
     public int plays;
 
@@ -52,13 +50,17 @@ public class Video {
 
         getYouTubeData(id);
         //getClosedCaptionsData(id);
-        getClosedCaptionsPlaintext(id);
+
         getFirebaseData(id);
         //getTrackData(id);
     }
 
-    public String getClosedCaptions(){
-        return closedCaptions;
+    public void generateclosedCaption(){
+        closedCaption = new ClosedCaption(id);
+    }
+
+    public ClosedCaption getClosedCaption(){
+        return closedCaption;
     }
 
     public String getTrackPath(){
@@ -66,7 +68,6 @@ public class Video {
     }
 
     public void getTrackData (String id){
-
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -94,160 +95,6 @@ public class Video {
                 // Handle any errors
             }
         });
-
-
-    }
-
-
-    public void getClosedCaptionsPlaintext (String id){
-
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(BaseApplication.getAppContext());
-        String url ="https://www.nitrxgen.net/youtube_cc/" + id + "/0.txt";
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Video.this.closedCaptionsPlaintext = response;
-                        Log.d("Response from nitrxgen:", "nitrxgen fetched " + id);
-                        getMissingClosedCaptions();
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Video.this.closedCaptions = "Unavailable";
-                Log.d("Response from nitrxgen:", "nitrxgen failed to fetch " + id);
-            }
-        });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
-
-    }
-
-    private void getMissingClosedCaptions (){
-
-        //Log.d("Parsed Word: ",  "start  getMissingClosedCaptions ()");
-
-        List<String> words = new ArrayList<>();
-        List<String> omittedWords = new ArrayList<>();
-        List<Integer> omittedWordsOffset = new ArrayList<>();
-        List<Integer> lineNumber = new ArrayList<>();
-        List<Integer> numberOfWords = new ArrayList<>();
-
-        int numberofWordsInALine = 0;
-        int start = 0, end = 0, line = 0;
-        for (int i = 1 ; i < closedCaptionsPlaintext.length()-1; i++){
-        boolean ready = false;
-        boolean newLine = false;
-
-        if (closedCaptionsPlaintext.charAt(i) == '\n'){
-            line ++;
-            start = i;
-            newLine = true;
-
-            numberOfWords.add(numberofWordsInALine);
-            numberofWordsInALine = 0;
-        }
-        else if (closedCaptionsPlaintext.charAt(i+1) == ' '
-                || closedCaptionsPlaintext.charAt(i+1) == '.'
-                || closedCaptionsPlaintext.charAt(i+1) == '<'
-                || closedCaptionsPlaintext.charAt(i+1) == ','
-                || closedCaptionsPlaintext.charAt(i+1) == '\n'){
-            end = i+1;
-            ready = true;
-        }
-
-        if (ready){
-            ready = false;
-                        if (newLine){
-                            newLine = false;
-
-
-                            /*
-
-
-                            if (closedCaptionsPlaintext.substring(start, end) != " ") {
-                                words.add(closedCaptionsPlaintext.substring(start, end));
-                                lineNumber.add(line);
-
-                                //Log.d("Parsed Word of",  closedCaptionsPlaintext.substring(start, end) + " Line: " + line + " "+ id + " " + start + " " + end);
-                            }
-
-                             */
-            }
-            else {
-                            if (end != start + 1){
-                                words.add(closedCaptionsPlaintext.substring(start+1, end));
-                                lineNumber.add(line);
-                                numberofWordsInALine ++;
-                                //Log.d("Parsed Word of", closedCaptionsPlaintext.substring(start+1, end) + " Line: " + line + " " + id + " " + start + " " + end);
-                            }
-                        }
-            start = end;
-        }
-
-        }
-
-        for (int i = 0 ; i < numberOfWords.size() ; i++){
-            if (numberOfWords.get(i) > 2){
-                omittedWordsOffset.add((numberOfWords.get(i) + numberOfWords.get(i)%3 )/2);
-            }
-            else{
-                omittedWordsOffset.add(0);
-            }
-        }
-
-        omittedWordsOffset.add(0);
-
-        String text;
-        if (words.size() != 0){
-            text = words.get(0);
-            omittedWords.add(words.get(0));
-            numberofWordsInALine = 1;
-            line = 0;
-            for (int i = 1 ; i < lineNumber.size() ; i++){
-
-                if (line == lineNumber.get(i)){
-
-                    numberofWordsInALine ++;
-
-                    if (numberofWordsInALine == omittedWordsOffset.get(line)){
-                        omittedWords.add(replaceOmittedWordWithUnderscore(words.get(i)));
-                        text = text + " " + omittedWords.get(i);
-                    }
-                    else{
-                        //text = text + " " + words.get(i);
-                        omittedWords.add(words.get(i));
-                        text = text + " " + omittedWords.get(i);
-                    }
-                }
-                else{
-
-                    //text = text + " " + omittedWordsOffset.get(line) + "th word \n" +  words.get(i);
-                    omittedWords.add(words.get(i));
-                    line ++;
-                    numberofWordsInALine = 1;
-                    text = text + "\n" + omittedWords.get(i);
-                }
-
-            }
-
-            Log.d("Parsed Words of", text + " Line: " + line + " " + id);
-        }
-    }
-
-    private String replaceOmittedWordWithUnderscore(String target){
-        String result;
-        result = "_";
-        for (int i = 1; i < target.length() ; i++){
-            result += "_";
-        }
-        return result;
     }
 
     public void getYouTubeData (String id){

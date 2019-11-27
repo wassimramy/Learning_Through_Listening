@@ -46,6 +46,7 @@ public class SignInActivity extends AppCompatActivity implements
 
     private TextView titleTextView;
     private ImageView loginAvatar;
+    private Button startANewGame;
     public static List<Video> videoList = new ArrayList<>();
 
 
@@ -59,7 +60,8 @@ public class SignInActivity extends AppCompatActivity implements
         loginAvatar = findViewById(R.id.loginAvatar);
 
         //Buttons
-        findViewById(R.id.startANewGameButton).setOnClickListener(this);
+        startANewGame = findViewById(R.id.startANewGameButton);
+        startANewGame.setOnClickListener(this);
         findViewById(R.id.signInWithGoogleButton).setOnClickListener(this);
     }
 
@@ -169,6 +171,10 @@ public class SignInActivity extends AppCompatActivity implements
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
         //DatabaseReference usersRef = ref.child();
 
+        if (videoList.size()>1){
+            videoList = new ArrayList<>();
+            findViewById(R.id.startANewGameButton).setEnabled(false);
+        }
         ChildEventListener childEventListener = new ChildEventListener() {
 
             @Override
@@ -180,6 +186,7 @@ public class SignInActivity extends AppCompatActivity implements
                     for (int i = 0 ; i < videoList.size() ; i++){
                         Log.d("videoList[" + i +"]", videoList.get(i).id + " ");
                     }
+                findViewById(R.id.startANewGameButton).setEnabled(true);
             }
 
             @Override
