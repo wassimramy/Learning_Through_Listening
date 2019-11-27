@@ -6,6 +6,8 @@ import android.media.TimedText;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.util.Log;
 
@@ -24,28 +26,38 @@ import java.util.Locale;
 
 
 
-public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener {
+public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener, View.OnClickListener {
     private static Handler handler = new Handler();
     private TextView txtDisplay;
     private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath;
+    private MediaPlayer player;
+    private Button pauseButton;
+    private int position;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_game);
         Intent intent = getIntent();
-        int position = intent.getIntExtra ("Position", 0); //get the URI value from the previous activity
+        position = intent.getIntExtra ("Position", 0); //get the URI value from the previous activity
 
         videoID = SignInActivity.videoList.get(position).id;
         videoThumbnailURL = SignInActivity.videoList.get(position).getThumbnailURL();
         videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptions();
         videoTrackPath = SignInActivity.videoList.get(position).getTrackPath();
 
+        //Views
         txtDisplay = (TextView) findViewById(R.id.txtDisplay);
+
+        //Buttons Listeners
+        findViewById(R.id.quitGameButton).setOnClickListener(this);
+        pauseButton = (Button) findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(this);
+        findViewById(R.id.restartButton).setOnClickListener(this);
 
         Uri trackFileUri = Uri.parse(videoTrackPath);
 
-        MediaPlayer player = MediaPlayer.create(this, trackFileUri);
+        player = MediaPlayer.create(this, trackFileUri);
         try {
             player.addTimedTextSource(getSubtitleFile(R.raw.sub),
                     MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
@@ -143,5 +155,54 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     public String secondsToDuration(int seconds) {
         return String.format("%02d:%02d:%02d", seconds / 3600,
                 (seconds % 3600) / 60, (seconds % 60), Locale.US);
+    }
+
+    // Back to Choose Game Activity
+    public void goBackToChooseGameActivity() {
+        Intent intent = new Intent(this, ChooseGameActivity.class);
+        startActivity(intent); //Start the activity
+        this.finish();
+    }
+
+    // Pause The Game
+    public void pauseGame() {
+        pauseButton.setText("Start");
+        player.pause();
+    }
+
+    // Start The Game
+    public void startGame() {
+        pauseButton.setText("Pause");
+        player.start();
+    }
+
+    // Restart The Game
+    public void restartGame() {
+        Intent intent = new Intent(this, PlayGameActivity.class);
+        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        startActivity(intent); //Start the activity
+        this.finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.quitGameButton) {
+            pauseGame();
+            goBackToChooseGameActivity();
+        } else if (i == R.id.pauseButton) {
+            Log.d("Button Hit", pauseButton.getText()+" ");
+            if (pauseButton.getText().equals("Pause")){
+                Log.d("Button Hit", "Pause button is clicked");
+                pauseGame();
+            }
+            else if (pauseButton.getText().equals("Start")){
+                startGame();
+            }
+
+        } else if (i == R.id.restartButton) {
+            pauseGame();
+            restartGame();
+        }
     }
 }

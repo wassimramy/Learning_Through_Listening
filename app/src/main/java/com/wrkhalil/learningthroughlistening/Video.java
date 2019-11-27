@@ -35,6 +35,7 @@ public class Video {
     private String title;
     private String thumbnailURL;
     private String closedCaptions;
+    private String missingClosedCaptions;
     private String trackPath;
     public int plays;
 
@@ -49,7 +50,7 @@ public class Video {
         getYouTubeData(id);
         getClosedCaptionsData(id);
         getFirebaseData(id);
-        getTrackData(id);
+        //getTrackData(id);
     }
 
     public String getClosedCaptions(){
@@ -108,7 +109,8 @@ public class Video {
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
                         Video.this.closedCaptions = response;
-                        Log.d("Response from nitrxgen:", "nitrxgen: " + response);
+                        //Log.d("Response from nitrxgen:", "nitrxgen: " + response);
+                        Video.this.getMissingClosedCaptions();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -120,6 +122,30 @@ public class Video {
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
+
+    }
+
+    private void getMissingClosedCaptions (){
+
+        for (int i = 1 ; i < closedCaptions.length()-1; i++){
+        int start = 0;
+        int end = i;
+        boolean ready = false;
+
+        if (closedCaptions.charAt(i-1) == ' '){
+            start = i-1;
+        }
+        else if (closedCaptions.charAt(i+1) == ' ' || closedCaptions.charAt(i+1) == ','){
+            end = i+1;
+            ready = true;
+        }
+
+        if (ready){
+            ready = false;
+            Log.d("Parsed Word", "Parsed Word: " + closedCaptions.substring(start, end));
+        }
+
+        }
     }
 
     public void getYouTubeData (String id){

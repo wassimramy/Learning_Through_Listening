@@ -56,6 +56,7 @@ public class ChooseGameActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PlayGameActivity.class);
         intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
         startActivity(intent); //Start the activity
+        this.finish();
     }
 
     public void onResume() {

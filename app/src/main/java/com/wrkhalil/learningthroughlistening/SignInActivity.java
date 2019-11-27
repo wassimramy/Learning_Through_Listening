@@ -137,7 +137,6 @@ public class SignInActivity extends AppCompatActivity implements
     public void onResume() {
         super.onResume();
         checkSignInStatus();
-        //Video video = new Video ("YOfa1xGWJCc");
         populateVideoListFromFirebase();
 
     }
@@ -151,7 +150,6 @@ public class SignInActivity extends AppCompatActivity implements
     public void startANewGame() {
         Intent intent = new Intent(this, ChooseGameActivity.class);
         startActivity(intent);
-        this.finish();
     }
 
     @Override
