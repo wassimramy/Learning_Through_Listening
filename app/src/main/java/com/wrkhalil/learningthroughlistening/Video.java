@@ -135,8 +135,11 @@ public class Video {
 
         List<String> words = new ArrayList<>();
         List<String> omittedWords = new ArrayList<>();
+        List<Integer> omittedWordsOffset = new ArrayList<>();
         List<Integer> lineNumber = new ArrayList<>();
         List<Integer> numberOfWords = new ArrayList<>();
+
+        int numberofWordsInALine = 0;
         int start = 0, end = 0, line = 0;
         for (int i = 1 ; i < closedCaptionsPlaintext.length()-1; i++){
         boolean ready = false;
@@ -146,28 +149,14 @@ public class Video {
             line ++;
             start = i;
             newLine = true;
-            //closedCaptionsPlaintext = ' ';
-        }
-        /*
-                else if (closedCaptionsPlaintext.charAt(i) == '♪' ||
-                closedCaptionsPlaintext.charAt(i) == ',' ||
-                closedCaptionsPlaintext.charAt(i) == '.'){
-            start = i+1;
-        }
-        */
 
-        /*
-                else if (closedCaptionsPlaintext.charAt(i) == '('){
-            start = i;
+            numberOfWords.add(numberofWordsInALine);
+            numberofWordsInALine = 0;
         }
-         */
-
-
         else if (closedCaptionsPlaintext.charAt(i+1) == ' '
                 || closedCaptionsPlaintext.charAt(i+1) == '.'
                 || closedCaptionsPlaintext.charAt(i+1) == '<'
                 || closedCaptionsPlaintext.charAt(i+1) == ','
-                //|| closedCaptionsPlaintext.charAt(i+1) == ')'
                 || closedCaptionsPlaintext.charAt(i+1) == '\n'){
             end = i+1;
             ready = true;
@@ -175,22 +164,27 @@ public class Video {
 
         if (ready){
             ready = false;
-
                         if (newLine){
                             newLine = false;
 
-                            if (closedCaptionsPlaintext.substring(start, end) != " "){
+
+                            /*
+
+
+                            if (closedCaptionsPlaintext.substring(start, end) != " ") {
                                 words.add(closedCaptionsPlaintext.substring(start, end));
                                 lineNumber.add(line);
+
                                 //Log.d("Parsed Word of",  closedCaptionsPlaintext.substring(start, end) + " Line: " + line + " "+ id + " " + start + " " + end);
                             }
 
-                //
+                             */
             }
             else {
                             if (end != start + 1){
                                 words.add(closedCaptionsPlaintext.substring(start+1, end));
                                 lineNumber.add(line);
+                                numberofWordsInALine ++;
                                 //Log.d("Parsed Word of", closedCaptionsPlaintext.substring(start+1, end) + " Line: " + line + " " + id + " " + start + " " + end);
                             }
                         }
@@ -199,39 +193,61 @@ public class Video {
 
         }
 
+        for (int i = 0 ; i < numberOfWords.size() ; i++){
+            if (numberOfWords.get(i) > 2){
+                omittedWordsOffset.add((numberOfWords.get(i) + numberOfWords.get(i)%3 )/2);
+            }
+            else{
+                omittedWordsOffset.add(0);
+            }
+        }
+
+        omittedWordsOffset.add(0);
+
         String text;
-        text = words.get(0);
-        line = 0;
-        for (int i = 1 ; i < lineNumber.size() ; i++){
+        if (words.size() != 0){
+            text = words.get(0);
+            omittedWords.add(words.get(0));
+            numberofWordsInALine = 1;
+            line = 0;
+            for (int i = 1 ; i < lineNumber.size() ; i++){
 
-            if (line == lineNumber.get(i)){
-                text = text + " " + words.get(i);
+                if (line == lineNumber.get(i)){
+
+                    numberofWordsInALine ++;
+
+                    if (numberofWordsInALine == omittedWordsOffset.get(line)){
+                        omittedWords.add(replaceOmittedWordWithUnderscore(words.get(i)));
+                        text = text + " " + omittedWords.get(i);
+                    }
+                    else{
+                        //text = text + " " + words.get(i);
+                        omittedWords.add(words.get(i));
+                        text = text + " " + omittedWords.get(i);
+                    }
+                }
+                else{
+
+                    //text = text + " " + omittedWordsOffset.get(line) + "th word \n" +  words.get(i);
+                    omittedWords.add(words.get(i));
+                    line ++;
+                    numberofWordsInALine = 1;
+                    text = text + "\n" + omittedWords.get(i);
+                }
+
             }
-            else{
 
-                text = text + "\n" +  words.get(i);
-                line ++;
-            }
-
+            Log.d("Parsed Words of", text + " Line: " + line + " " + id);
         }
+    }
 
-        Log.d("Parsed Words of", text + " Line: " + line + " " + id);
-
-        /*
-                line = 0;
-        for (int i = 0 ; i < lineNumber.size() ; i++){
-
-            if (line == lineNumber.get(i)){
-                text = text + " " + words.get(i);
-            }
-            else{
-                line ++;
-                text = text + "\n" + numberOfWords.get(i) + words.get(i);
-            }
-
+    private String replaceOmittedWordWithUnderscore(String target){
+        String result;
+        result = "_";
+        for (int i = 1; i < target.length() ; i++){
+            result += "_";
         }
-         */
-
+        return result;
     }
 
     public void getYouTubeData (String id){
