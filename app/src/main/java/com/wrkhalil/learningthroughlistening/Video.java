@@ -28,6 +28,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Video {
 
@@ -35,6 +37,7 @@ public class Video {
     private String title;
     private String thumbnailURL;
     private String closedCaptions;
+    private String closedCaptionsPlaintext;
     private String missingClosedCaptions;
     private String trackPath;
     public int plays;
@@ -48,7 +51,8 @@ public class Video {
         this.plays = plays;
 
         getYouTubeData(id);
-        getClosedCaptionsData(id);
+        //getClosedCaptionsData(id);
+        getClosedCaptionsPlaintext(id);
         getFirebaseData(id);
         //getTrackData(id);
     }
@@ -63,10 +67,8 @@ public class Video {
 
     public void getTrackData (String id){
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
 
-        // Create a storage reference from our app
-        StorageReference storageRef = storage.getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
 
         // Create a reference to a file from a Google Cloud Storage URI
         StorageReference gsReference = storage.getReferenceFromUrl("gs://learning-through-listening.appspot.com/server/saving-data/fireblog/videos/" + id + ".mp3");
@@ -96,11 +98,12 @@ public class Video {
 
     }
 
-    public void getClosedCaptionsData (String id){
+
+    public void getClosedCaptionsPlaintext (String id){
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(BaseApplication.getAppContext());
-        String url ="https://www.nitrxgen.net/youtube_cc/" + id + "/0.srt";
+        String url ="https://www.nitrxgen.net/youtube_cc/" + id + "/0.txt";
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -108,15 +111,16 @@ public class Video {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        Video.this.closedCaptions = response;
-                        //Log.d("Response from nitrxgen:", "nitrxgen: " + response);
-                        Video.this.getMissingClosedCaptions();
+                        Video.this.closedCaptionsPlaintext = response;
+                        Log.d("Response from nitrxgen:", "nitrxgen fetched " + id);
+                        getMissingClosedCaptions();
+
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Video.this.closedCaptions = "Unavailable";
-                Log.d("Response from nitrxgen:", "Unavailable");
+                Log.d("Response from nitrxgen:", "nitrxgen failed to fetch " + id);
             }
         });
 
@@ -127,25 +131,107 @@ public class Video {
 
     private void getMissingClosedCaptions (){
 
-        for (int i = 1 ; i < closedCaptions.length()-1; i++){
-        int start = 0;
-        int end = i;
-        boolean ready = false;
+        //Log.d("Parsed Word: ",  "start  getMissingClosedCaptions ()");
 
-        if (closedCaptions.charAt(i-1) == ' '){
-            start = i-1;
+        List<String> words = new ArrayList<>();
+        List<String> omittedWords = new ArrayList<>();
+        List<Integer> lineNumber = new ArrayList<>();
+        List<Integer> numberOfWords = new ArrayList<>();
+        int start = 0, end = 0, line = 0;
+        for (int i = 1 ; i < closedCaptionsPlaintext.length()-1; i++){
+        boolean ready = false;
+        boolean newLine = false;
+
+        if (closedCaptionsPlaintext.charAt(i) == '\n'){
+            line ++;
+            start = i;
+            newLine = true;
+            //closedCaptionsPlaintext = ' ';
         }
-        else if (closedCaptions.charAt(i+1) == ' ' || closedCaptions.charAt(i+1) == ','){
+        /*
+                else if (closedCaptionsPlaintext.charAt(i) == '♪' ||
+                closedCaptionsPlaintext.charAt(i) == ',' ||
+                closedCaptionsPlaintext.charAt(i) == '.'){
+            start = i+1;
+        }
+        */
+
+        /*
+                else if (closedCaptionsPlaintext.charAt(i) == '('){
+            start = i;
+        }
+         */
+
+
+        else if (closedCaptionsPlaintext.charAt(i+1) == ' '
+                || closedCaptionsPlaintext.charAt(i+1) == '.'
+                || closedCaptionsPlaintext.charAt(i+1) == '<'
+                || closedCaptionsPlaintext.charAt(i+1) == ','
+                //|| closedCaptionsPlaintext.charAt(i+1) == ')'
+                || closedCaptionsPlaintext.charAt(i+1) == '\n'){
             end = i+1;
             ready = true;
         }
 
         if (ready){
             ready = false;
-            Log.d("Parsed Word", "Parsed Word: " + closedCaptions.substring(start, end));
+
+                        if (newLine){
+                            newLine = false;
+
+                            if (closedCaptionsPlaintext.substring(start, end) != " "){
+                                words.add(closedCaptionsPlaintext.substring(start, end));
+                                lineNumber.add(line);
+                                //Log.d("Parsed Word of",  closedCaptionsPlaintext.substring(start, end) + " Line: " + line + " "+ id + " " + start + " " + end);
+                            }
+
+                //
+            }
+            else {
+                            if (end != start + 1){
+                                words.add(closedCaptionsPlaintext.substring(start+1, end));
+                                lineNumber.add(line);
+                                //Log.d("Parsed Word of", closedCaptionsPlaintext.substring(start+1, end) + " Line: " + line + " " + id + " " + start + " " + end);
+                            }
+                        }
+            start = end;
         }
 
         }
+
+        String text;
+        text = words.get(0);
+        line = 0;
+        for (int i = 1 ; i < lineNumber.size() ; i++){
+
+            if (line == lineNumber.get(i)){
+                text = text + " " + words.get(i);
+            }
+            else{
+
+                text = text + "\n" +  words.get(i);
+                line ++;
+            }
+
+        }
+
+        Log.d("Parsed Words of", text + " Line: " + line + " " + id);
+
+        /*
+                line = 0;
+        for (int i = 0 ; i < lineNumber.size() ; i++){
+
+            if (line == lineNumber.get(i)){
+                text = text + " " + words.get(i);
+            }
+            else{
+                line ++;
+                text = text + "\n" + numberOfWords.get(i) + words.get(i);
+            }
+
+        }
+         */
+
     }
 
     public void getYouTubeData (String id){
