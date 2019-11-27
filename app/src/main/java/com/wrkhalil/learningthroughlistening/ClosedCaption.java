@@ -17,18 +17,19 @@ public class ClosedCaption {
     private String id;
     private NitrxgenSRTFileParser nitrxgenSRTFileParser;
     private NitrxgenTXTFileParser nitrxgenTXTFileParser;
+    private SRTFile srtFile;
     private RequestQueue queue = Volley.newRequestQueue(BaseApplication.getAppContext());
 
 
     ClosedCaption (String id){
         this.id = id;
-        getClosedCaptionsFiles();
+        getSRTFile();
     }
 
 
     private void getClosedCaptionsFiles (){
-        getSRTFile();
-        getTXTFile();
+
+
         //NitrxgenTXTFile nitrxgenTXTFile = new  NitrxgenTXTFile(id);
         //NitrxgenSRTFile nitrxgenSRTFile = new  NitrxgenSRTFile(id);
     }
@@ -85,10 +86,20 @@ public class ClosedCaption {
 
     private void parseTXTFile(String transcript){
         nitrxgenTXTFileParser = new NitrxgenTXTFileParser(id, transcript);
+        generateSRTFile();
     }
 
     private void parseSRTFile(String transcript){
         nitrxgenSRTFileParser = new NitrxgenSRTFileParser(id, transcript);
+        getTXTFile();
+    }
+
+    private void generateSRTFile(){
+        if (nitrxgenTXTFileParser.getGeneratedTranscript() != null &&
+                nitrxgenSRTFileParser.getParsedTranscript() != null)
+
+            srtFile = new SRTFile( nitrxgenSRTFileParser.getParsedTranscript(), nitrxgenTXTFileParser.getGeneratedTranscript());
+            Log.d("ClosedCaption", "generateSRTFile: Both SRT & TXT files are generated");
     }
 
 }

@@ -12,6 +12,7 @@ public class NitrxgenTXTFileParser {
     private List<String> words = new ArrayList<>();
     private List<String> omittedWords = new ArrayList<>();
     private List<String> targetWords = new ArrayList<>();
+    private List<String> generatedTranscript = new ArrayList<>();
     private List<Integer> targetWordsLineNumber = new ArrayList<>();
     private List<Integer> omittedWordsOffset = new ArrayList<>();
     private List<Integer> lineNumber = new ArrayList<>();
@@ -25,6 +26,10 @@ public class NitrxgenTXTFileParser {
         generateOmittedWordsList();
     }
 
+    public List<String> getGeneratedTranscript() {
+        return generatedTranscript;
+    }
+
     private void generateOmittedWordsList(){
         int numberOfWordsInALine = 1;
         int line = 0, targetNumber = 0;
@@ -33,6 +38,7 @@ public class NitrxgenTXTFileParser {
         if (words.size() != 0){
             text = words.get(0);
             omittedWords.add(words.get(0));
+            generatedTranscript.add(words.get(0));
 
             for (int i = 1 ; i < lineNumber.size() ; i++){
 
@@ -43,30 +49,40 @@ public class NitrxgenTXTFileParser {
                     if (numberOfWordsInALine == omittedWordsOffset.get(line)){
 
                         omittedWords.add(replaceOmittedWordWithUnderscore(words.get(i)));
+                        generatedTranscript.set (line, generatedTranscript.get(line) + " " + replaceOmittedWordWithUnderscore(words.get(i)));
                         targetWords.add(words.get(i));
                         targetWordsLineNumber.add(line);
-                        text = text + " " + omittedWords.get(i) + " (" + targetWords.get(targetNumber) +" " + targetWordsLineNumber.get(targetNumber) + ")";
+                        //text = text + " " + omittedWords.get(i) + " (" + targetWords.get(targetNumber) +" " + targetWordsLineNumber.get(targetNumber) + ")";
                         targetNumber ++;
                     }
                     else{
                         //text = text + " " + words.get(i);
                         omittedWords.add(words.get(i));
-                        text = text + " " + omittedWords.get(i);
+                        generatedTranscript.set (line, generatedTranscript.get(line) + " " + words.get(i));
+                        //text = text + " " + omittedWords.get(i);
                     }
                 }
                 else{
-
                     //text = text + " " + omittedWordsOffset.get(line) + "th word \n" +  words.get(i);
                     omittedWords.add(words.get(i));
+                    generatedTranscript.add(words.get(i));
                     line ++;
                     numberOfWordsInALine = 1;
-                    text = text + "\n" + omittedWords.get(i);
+                    //text = text + "\n" + omittedWords.get(i);
                 }
             }
-            Log.d("Parsed Words of", text + " Line: " + line + " " + id);
+            //checkGeneratedTranscript();
+            //Log.d("Parsed Words of", text + " Line: " + line + " " + id);
         }
+
+
     }
 
+    private void checkGeneratedTranscript (){
+        for (int i = 0 ; i < generatedTranscript.size() ; i++){
+            Log.d("Generated Transcript", generatedTranscript.get(i));
+        }
+    }
     private void setMissingWordsOffset(){
         for (int i = 0 ; i < numberOfWords.size() ; i++){
             if (numberOfWords.get(i) > 2){
