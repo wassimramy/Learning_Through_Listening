@@ -47,10 +47,16 @@ public class AudioFileRetriever {
         gsReference.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
             // Local temp file has been created
             AudioFileRetriever.this.trackPath = finalLocalFile.getAbsolutePath();
+            ChooseDifficultyActivity.easyGameButton.setEnabled(true);
+            ChooseDifficultyActivity.mediumGameButton.setEnabled(true);
+            ChooseDifficultyActivity.hardGameButton.setEnabled(true);
             Log.d("Fetching mp3 File", "Location on mobile device: "
                     + finalLocalFile.getAbsolutePath());
         }).addOnFailureListener(exception -> {
             // Handle any errors
+            ChooseDifficultyActivity.easyGameButton.setEnabled(false);
+            ChooseDifficultyActivity.mediumGameButton.setEnabled(false);
+            ChooseDifficultyActivity.hardGameButton.setEnabled(false);
         });
     }
 

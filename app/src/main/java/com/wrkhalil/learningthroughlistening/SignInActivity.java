@@ -170,11 +170,10 @@ public class SignInActivity extends AppCompatActivity implements
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
-        //DatabaseReference usersRef = ref.child();
+        findViewById(R.id.startANewGameButton).setEnabled(false);
 
         if (videoList.size()>1){
             videoList = new ArrayList<>();
-            findViewById(R.id.startANewGameButton).setEnabled(false);
         }
         ChildEventListener childEventListener = new ChildEventListener() {
 
