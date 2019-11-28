@@ -47,12 +47,18 @@ public class ChooseGameActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         //Retrieve the position of the item clicked in the recycleView and send it to startItemEditActivity to show the respective item information
-        VideoAdapter videoAdapter = new VideoAdapter(this, videoList, position -> startShowPictureActivity(position));
+        VideoAdapter videoAdapter = new VideoAdapter(this, videoList, position -> prepareEssentialData(position));
         recyclerView.setAdapter(videoAdapter); //Update the recyclerView
     }
 
     /* Called when the user taps on an item in the recycler view */
-    private void startShowPictureActivity(int position) {
+    private void prepareEssentialData(int position) {
+        videoList.get(position).generateClosedCaption();
+        videoList.get(position).downloadAudioFile();
+        //startGameActivity(position);
+    }
+
+    public void startGameActivity(int position){
         Intent intent = new Intent(this, PlayGameActivity.class);
         intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
         startActivity(intent); //Start the activity

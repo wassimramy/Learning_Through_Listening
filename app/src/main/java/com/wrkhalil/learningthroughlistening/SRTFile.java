@@ -1,5 +1,6 @@
 package com.wrkhalil.learningthroughlistening;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -9,20 +10,31 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SRTFile {
 
+    private String id;
     private List<String> parsedTranscript = new ArrayList<>();
     private List<String> generatedTranscript = new ArrayList<>();
     private StringBuilder closedCaptions = new StringBuilder();
+    private String path;
 
-    SRTFile(List<String> parsedTranscript, List<String> generatedTranscript){
+    SRTFile(String id, List<String> parsedTranscript, List<String> generatedTranscript){
+        this.id = id;
         this.parsedTranscript = parsedTranscript;
         this.generatedTranscript = generatedTranscript;
         generateClosedCaptions();
-        CheckClosedCaptions();
+        //CheckClosedCaptions();
+        writeToFile(BaseApplication.getAppContext());
+    }
+
+    public String getPath() {
+        return path;
     }
 
     private void generateClosedCaptions(){
@@ -44,5 +56,33 @@ public class SRTFile {
 
         Log.d("SRTFile", "CheckClosedCaptions: " + closedCaptions);
     }
+
+    private void writeToFile(Context context) {
+        String fileName = id + ".srt";
+        String text;
+        FileOutputStream fos = null;
+
+        try {
+            fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            for (int i = 0 ; i < parsedTranscript.size() ; i++){
+                text = (parsedTranscript.get(i)+'\n');
+                fos.write(text.getBytes());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                    path = context.getFilesDir() + "/" + fileName;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
 }

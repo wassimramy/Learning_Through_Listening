@@ -9,15 +9,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ClosedCaption {
 
     private String id;
     private NitrxgenSRTFileParser nitrxgenSRTFileParser;
     private NitrxgenTXTFileParser nitrxgenTXTFileParser;
     private SRTFile srtFile;
+    private String path;
     private RequestQueue queue = Volley.newRequestQueue(BaseApplication.getAppContext());
 
 
@@ -26,12 +24,8 @@ public class ClosedCaption {
         getSRTFile();
     }
 
-
-    private void getClosedCaptionsFiles (){
-
-
-        //NitrxgenTXTFile nitrxgenTXTFile = new  NitrxgenTXTFile(id);
-        //NitrxgenSRTFile nitrxgenSRTFile = new  NitrxgenSRTFile(id);
+    public String getPath() {
+        return path;
     }
 
     private void getSRTFile (){
@@ -44,14 +38,12 @@ public class ClosedCaption {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        //NitrxgenSRTFile.this.transcript =  response;
                         parseSRTFile(response);
                         Log.d("Response from nitrxgen:", "SRT File is fetched successfully " + id);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //NitrxgenSRTFile.this.transcript =  "SRT File is Unavailable";
                 Log.d("Response from nitrxgen:", "SRT File is unavailable " + id);
             }
         });
@@ -68,14 +60,12 @@ public class ClosedCaption {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     // Display the first 500 characters of the response string.
-                    //NitrxgenTXTFile.this.transcript = response;
                     Log.d("Response from nitrxgen:", "TXT File is fetched successfully " + id);
                     parseTXTFile(response);
 
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //NitrxgenTXTFile.this.transcript = "Unavailable";
                 Log.d("Response from nitrxgen:", "TXT File is unavailable " + id);
             }
         });
@@ -98,7 +88,11 @@ public class ClosedCaption {
         if (nitrxgenTXTFileParser.getGeneratedTranscript() != null &&
                 nitrxgenSRTFileParser.getParsedTranscript() != null)
 
-            srtFile = new SRTFile( nitrxgenSRTFileParser.getParsedTranscript(), nitrxgenTXTFileParser.getGeneratedTranscript());
+            srtFile = new SRTFile( id, nitrxgenSRTFileParser.getParsedTranscript(),
+                    nitrxgenTXTFileParser.getGeneratedTranscript());
+
+            this.path = srtFile.getPath();
+
             Log.d("ClosedCaption", "generateSRTFile: Both SRT & TXT files are generated");
     }
 

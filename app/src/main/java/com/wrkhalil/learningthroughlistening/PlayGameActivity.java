@@ -43,27 +43,23 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
 
         videoID = SignInActivity.videoList.get(position).id;
         videoThumbnailURL = SignInActivity.videoList.get(position).getThumbnailURL();
-        SignInActivity.videoList.get(position).generateclosedCaption();
-        //videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptions();
         videoTrackPath = SignInActivity.videoList.get(position).getTrackPath();
 
         //Views
-        txtDisplay = (TextView) findViewById(R.id.txtDisplay);
+        txtDisplay = findViewById(R.id.txtDisplay);
 
         //Buttons Listeners
         findViewById(R.id.quitGameButton).setOnClickListener(this);
-        pauseButton = (Button) findViewById(R.id.pauseButton);
+        pauseButton = findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(this);
         findViewById(R.id.restartButton).setOnClickListener(this);
 
-        //Uri trackFileUri = Uri.parse(videoTrackPath);
-
-        /*
+        Uri trackFileUri = Uri.parse(videoTrackPath);
 
 
         player = MediaPlayer.create(this, trackFileUri);
         try {
-            player.addTimedTextSource(getSubtitleFile(R.raw.sub),
+            player.addTimedTextSource(SignInActivity.videoList.get(position).getClosedCaptionPath() ,
                     MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
             int textTrackIndex = findTrackIndexFor(
                     MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT, player.getTrackInfo());
@@ -79,7 +75,6 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
             e.printStackTrace();
         }
 
-         */
 
     }
 
@@ -173,13 +168,13 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     // Pause The Game
     public void pauseGame() {
         pauseButton.setText("Start");
-        //player.pause();
+        player.pause();
     }
 
     // Start The Game
     public void startGame() {
         pauseButton.setText("Pause");
-        //player.start();
+        player.start();
     }
 
     // Restart The Game
