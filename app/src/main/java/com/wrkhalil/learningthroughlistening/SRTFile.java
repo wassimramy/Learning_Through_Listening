@@ -13,15 +13,13 @@ import com.android.volley.toolbox.Volley;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SRTFile {
 
     private String id;
-    private List<String> parsedTranscript = new ArrayList<>();
-    private List<String> generatedTranscript = new ArrayList<>();
-    private StringBuilder closedCaptions = new StringBuilder();
+    private List<String> parsedTranscript;
+    private List<String> generatedTranscript;
     private String path;
 
     SRTFile(String id, List<String> parsedTranscript, List<String> generatedTranscript){
@@ -29,7 +27,6 @@ public class SRTFile {
         this.parsedTranscript = parsedTranscript;
         this.generatedTranscript = generatedTranscript;
         generateClosedCaptions();
-        //CheckClosedCaptions();
         writeToFile(BaseApplication.getAppContext());
     }
 
@@ -45,16 +42,6 @@ public class SRTFile {
                 generatedTranscriptIndex ++;
             }
         }
-    }
-
-    private void CheckClosedCaptions(){
-
-        closedCaptions.append(parsedTranscript.get(0));
-        for (int i = 1 ; i < parsedTranscript.size() ; i++){
-                closedCaptions.append  ('\n' + parsedTranscript.get(i));
-        }
-
-        Log.d("SRTFile", "CheckClosedCaptions: " + closedCaptions);
     }
 
     private void writeToFile(Context context) {

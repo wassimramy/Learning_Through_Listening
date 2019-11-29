@@ -17,6 +17,7 @@ public class NitrxgenTXTFileParser {
     private List<Integer> omittedWordsOffset = new ArrayList<>();
     private List<Integer> lineNumber = new ArrayList<>();
     private List<Integer> numberOfWords = new ArrayList<>();
+    private List<ChoicesGenerator> choices = new ArrayList<>();
 
     NitrxgenTXTFileParser(String id, String closedCaptionsPlaintext){
         this.id = id;
@@ -49,9 +50,17 @@ public class NitrxgenTXTFileParser {
                     if (numberOfWordsInALine == omittedWordsOffset.get(line)){
 
                         omittedWords.add(replaceOmittedWordWithUnderscore(words.get(i)));
-                        generatedTranscript.set (line, generatedTranscript.get(line) + " " + replaceOmittedWordWithUnderscore(words.get(i)));
+                        choices.add(new ChoicesGenerator(words.get(i), words));
+                        generatedTranscript.set (line, generatedTranscript.get(line) + " " +
+                                replaceOmittedWordWithUnderscore(words.get(i)) + " (" +
+                                choices.get(targetNumber).getFirstChoice() + ", " +
+                                choices.get(targetNumber).getSecondChoice() + ", " +
+                                choices.get(targetNumber).getThirdChoice() + ", " +
+                                choices.get(targetNumber).getFourthChoice() + ") ");
+
                         targetWords.add(words.get(i));
                         targetWordsLineNumber.add(line);
+
                         //text = text + " " + omittedWords.get(i) + " (" + targetWords.get(targetNumber) +" " + targetWordsLineNumber.get(targetNumber) + ")";
                         targetNumber ++;
                     }
@@ -84,14 +93,23 @@ public class NitrxgenTXTFileParser {
         }
     }
     private void setMissingWordsOffset(){
-        for (int i = 0 ; i < numberOfWords.size() ; i++){
+        for (int i = 0 ; i < numberOfWords.size() ; i += 2){
             if (numberOfWords.get(i) > 2){
                 omittedWordsOffset.add((numberOfWords.get(i) + numberOfWords.get(i)%3 )/2);
+                omittedWordsOffset.add(0);
             }
             else{
                 omittedWordsOffset.add(0);
+                omittedWordsOffset.add(0);
             }
         }
+        omittedWordsOffset.add(0);
+        omittedWordsOffset.add(0);
+        omittedWordsOffset.add(0);
+        omittedWordsOffset.add(0);
+        omittedWordsOffset.add(0);
+        omittedWordsOffset.add(0);
+        omittedWordsOffset.add(0);
         omittedWordsOffset.add(0);
     }
 
