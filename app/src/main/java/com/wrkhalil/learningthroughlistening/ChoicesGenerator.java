@@ -20,6 +20,10 @@ public class ChoicesGenerator {
         generateFourChoices ();
     }
 
+    public String getTargetWord() {
+        return targetWord;
+    }
+
     public String getFirstChoice() {
         //return firstChoice;
         return choices.get(0);

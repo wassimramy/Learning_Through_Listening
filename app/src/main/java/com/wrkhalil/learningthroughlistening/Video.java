@@ -1,5 +1,7 @@
 package com.wrkhalil.learningthroughlistening;
 
+import java.util.List;
+
 public class Video {
 
     public String id;
@@ -46,5 +48,9 @@ public class Video {
 
     public int getPlays() {
         return firebaseDataRetriever.getPlays();
+    }
+
+    public List<ChoicesGenerator> getChoices() {
+        return closedCaption.getChoices();
     }
 }

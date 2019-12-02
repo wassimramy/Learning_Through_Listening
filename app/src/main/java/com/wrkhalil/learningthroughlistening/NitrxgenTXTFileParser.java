@@ -51,12 +51,17 @@ public class NitrxgenTXTFileParser {
 
                         omittedWords.add(replaceOmittedWordWithUnderscore(words.get(i)));
                         choices.add(new ChoicesGenerator(words.get(i), words));
+                        /*
                         generatedTranscript.set (line, generatedTranscript.get(line) + " " +
                                 replaceOmittedWordWithUnderscore(words.get(i)) + " (" +
                                 choices.get(targetNumber).getFirstChoice() + ", " +
                                 choices.get(targetNumber).getSecondChoice() + ", " +
                                 choices.get(targetNumber).getThirdChoice() + ", " +
                                 choices.get(targetNumber).getFourthChoice() + ") ");
+                         */
+
+                        generatedTranscript.set (line, generatedTranscript.get(line) + " " +
+                                replaceOmittedWordWithUnderscore(words.get(i)));
 
                         targetWords.add(words.get(i));
                         targetWordsLineNumber.add(line);
@@ -154,5 +159,9 @@ public class NitrxgenTXTFileParser {
             result += "_";
         }
         return result;
+    }
+
+    public List<ChoicesGenerator> getChoices() {
+        return choices;
     }
 }

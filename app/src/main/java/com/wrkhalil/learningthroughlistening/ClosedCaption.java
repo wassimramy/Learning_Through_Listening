@@ -7,6 +7,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.List;
+
 public class ClosedCaption {
 
     private String id;
@@ -20,6 +22,10 @@ public class ClosedCaption {
     ClosedCaption (String id){
         this.id = id;
         getSRTFile();
+    }
+
+    public List<ChoicesGenerator> getChoices() {
+        return nitrxgenTXTFileParser.getChoices();
     }
 
     public String getPath() {
