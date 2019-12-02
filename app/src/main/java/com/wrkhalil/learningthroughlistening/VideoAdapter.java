@@ -42,7 +42,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ItemViewHold
     public void onBindViewHolder(@NonNull VideoAdapter.ItemViewHolder holder, final int position) {
         holder.itemTitleTextView.setText(list.get(position).getTitle()); //Set the itemTitleTextView in the row layout to "Image " + position to enumerate the pictures
 
-        holder.itemDescriptionTextView.setText(list.get(position).plays + " Plays"); //Set the itemDateAndTime in the row layout to the formatted date and time
+        holder.itemDescriptionTextView.setText(list.get(position).getPlays() + " Plays"); //Set the itemDateAndTime in the row layout to the formatted date and time
         RequestOptions requestOptions = new RequestOptions(); //Set the options of for the displayed picture
         requestOptions.placeholder(R.drawable.ic_launcher_background); //Picture displayed when the app is fetching the picture
         requestOptions.error(R.drawable.ic_launcher_background); //Picture displayed when the picture is not fetched

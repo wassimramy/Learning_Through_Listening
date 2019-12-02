@@ -9,14 +9,17 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity {
 
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
     public static User operatingUser;
+
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
+            //noinspection deprecation
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
         }
@@ -29,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
             mProgressDialog.dismiss();
         }
     }
-
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {

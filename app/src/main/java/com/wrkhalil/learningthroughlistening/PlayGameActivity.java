@@ -1,5 +1,6 @@
 package com.wrkhalil.learningthroughlistening;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.TimedText;
@@ -23,7 +24,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Locale;
 
-
+import static com.wrkhalil.learningthroughlistening.R.color.green;
+import static com.wrkhalil.learningthroughlistening.R.color.red;
 
 
 public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener, View.OnClickListener {
@@ -32,7 +34,10 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath;
     private MediaPlayer player;
     private Button pauseButton;
+    private Button firstChoiceButton, secondChoiceButton, thirdChoiceButton, fourthChoiceButton;
     private int position;
+    private String targetWord = "null";
+    private int choicesIndex = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,23 +48,36 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
 
         videoID = SignInActivity.videoList.get(position).id;
         videoThumbnailURL = SignInActivity.videoList.get(position).getThumbnailURL();
-        videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptions();
         videoTrackPath = SignInActivity.videoList.get(position).getTrackPath();
 
+        //videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptionPath();
         //Views
-        txtDisplay = (TextView) findViewById(R.id.txtDisplay);
+        txtDisplay = findViewById(R.id.txtDisplay);
 
         //Buttons Listeners
         findViewById(R.id.quitGameButton).setOnClickListener(this);
-        pauseButton = (Button) findViewById(R.id.pauseButton);
+        firstChoiceButton = findViewById(R.id.firstChoiceButton);
+        secondChoiceButton = findViewById(R.id.secondChoiceButton);
+        thirdChoiceButton = findViewById(R.id.thirdChoiceButton);
+        fourthChoiceButton = findViewById(R.id.fourthChoiceButton);
+
+        firstChoiceButton.setOnClickListener(this);
+        secondChoiceButton.setOnClickListener(this);
+        thirdChoiceButton.setOnClickListener(this);
+        fourthChoiceButton.setOnClickListener(this);
+
+        setChoicesButtons(false);
+
+        pauseButton = findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(this);
         findViewById(R.id.restartButton).setOnClickListener(this);
 
         Uri trackFileUri = Uri.parse(videoTrackPath);
 
+
         player = MediaPlayer.create(this, trackFileUri);
         try {
-            player.addTimedTextSource(getSubtitleFile(R.raw.sub),
+            player.addTimedTextSource(SignInActivity.videoList.get(position).getClosedCaptionPath() ,
                     MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
             int textTrackIndex = findTrackIndexFor(
                     MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT, player.getTrackInfo());
@@ -74,6 +92,26 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
             Log.w("Subtitle Status", "Failed!");
             e.printStackTrace();
         }
+    }
+
+    private void setChoicesButtons(boolean choicesEnable){
+
+        PlayGameActivity.this.firstChoiceButton.setText(
+                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFirstChoice());
+
+        PlayGameActivity.this.secondChoiceButton.setText(
+                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getSecondChoice());
+
+        PlayGameActivity.this.thirdChoiceButton.setText(
+                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getThirdChoice());
+
+        PlayGameActivity.this.fourthChoiceButton.setText(
+                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFourthChoice());
+
+        PlayGameActivity.this.firstChoiceButton.setEnabled(choicesEnable);
+        PlayGameActivity.this.secondChoiceButton.setEnabled(choicesEnable);
+        PlayGameActivity.this.thirdChoiceButton.setEnabled(choicesEnable);
+        PlayGameActivity.this.fourthChoiceButton.setEnabled(choicesEnable);
 
     }
 
@@ -91,62 +129,25 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         return index;
     }
 
-    private String getSubtitleFile(int resId) {
-        String fileName = getResources().getResourceEntryName(resId);
-        File subtitleFile = getFileStreamPath(fileName);
-        // Copy the file from the res/raw folder to your app folder on the
-        // device
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            inputStream = new ByteArrayInputStream(videoClosedCaptions.getBytes());
-            outputStream = new FileOutputStream(subtitleFile, false);
-            copyFile(inputStream, outputStream);
-            return subtitleFile.getAbsolutePath();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeStreams(inputStream, outputStream);
-        }
-        return "";
-    }
-
-    private void copyFile(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        final int BUFFER_SIZE = 1024;
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int length = -1;
-        while ((length = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, length);
-        }
-    }
-
-    // A handy method I use to close all the streams
-    private void closeStreams(Closeable... closeables) {
-        if (closeables != null) {
-            for (Closeable stream : closeables) {
-                if (stream != null) {
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onTimedText(final MediaPlayer mp, final TimedText text) {
         if (text != null) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    int seconds = mp.getCurrentPosition() / 1000;
+            handler.post(() -> {
+                int seconds = mp.getCurrentPosition() / 10000;
 
-                    txtDisplay.setText("[" + secondsToDuration(seconds) + "] "
-                            + text.getText());
+                txtDisplay.setTextColor(R.color.grey_700);
+
+                if (text.getText().contains("_")){
+                    PlayGameActivity.this.setChoicesButtons(true);
+                    PlayGameActivity.this.choicesIndex ++;
                 }
+                else {
+                    PlayGameActivity.this.setChoicesButtons(false);
+                }
+
+                txtDisplay.setText("[" + secondsToDuration(seconds) + "] "
+                        + text.getText());
             });
         }
     }
@@ -176,6 +177,31 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         player.start();
     }
 
+    private String generateUnderscores(String target){
+        String result;
+        result = "_";
+        for (int i = 1; i < target.length() ; i++){
+            result += "_";
+        }
+        return result;
+    }
+
+    // Check if the choice is Correct
+    @SuppressLint("ResourceAsColor")
+    public void receiveChoice(String choice) {
+        String txtDisplayString = txtDisplay.getText() + "";
+        targetWord = SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getTargetWord();
+
+        if (!choice.equals(targetWord)){
+            txtDisplay.setTextColor(red);
+            txtDisplay.setText(txtDisplayString.replace(generateUnderscores(targetWord), "X_" + choice + "_X"));
+        }
+        else{
+            txtDisplay.setTextColor(green);
+            txtDisplay.setText(txtDisplayString.replace(generateUnderscores(targetWord), choice));
+        }
+    }
+
     // Restart The Game
     public void restartGame() {
         Intent intent = new Intent(this, PlayGameActivity.class);
@@ -203,6 +229,18 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         } else if (i == R.id.restartButton) {
             pauseGame();
             restartGame();
+        }
+        else if (i == R.id.firstChoiceButton){
+            receiveChoice(firstChoiceButton.getText().toString());
+        }
+        else if (i == R.id.secondChoiceButton){
+            receiveChoice(secondChoiceButton.getText().toString());
+        }
+        else if (i == R.id.thirdChoiceButton){
+            receiveChoice(thirdChoiceButton.getText().toString());
+        }
+        else if (i == R.id.fourthChoiceButton){
+            receiveChoice(fourthChoiceButton.getText().toString());
         }
     }
 }
