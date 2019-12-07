@@ -43,7 +43,6 @@ public class ClosedCaption {
                     parseSRTFile(response);
                     Log.d("Response from nitrxgen:", "SRT File is fetched successfully " + id);
                 }, error -> {
-
             Log.d("Response from nitrxgen:", "SRT File is unavailable " + id);
             getSRTFile();
         });
