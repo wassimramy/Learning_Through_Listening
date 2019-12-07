@@ -1,6 +1,4 @@
 package com.wrkhalil.learningthroughlistening;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -15,28 +13,17 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.Locale;
-
-import static com.wrkhalil.learningthroughlistening.R.color.green;
-import static com.wrkhalil.learningthroughlistening.R.color.red;
 
 
 public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener, View.OnClickListener {
     private static Handler handler = new Handler();
-    private TextView txtDisplay;
+    private TextView txtDisplay, txtScore;
     private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath, wrongChoice;
     private MediaPlayer player;
     private Button pauseButton;
     private Button firstChoiceButton, secondChoiceButton, thirdChoiceButton, fourthChoiceButton;
-    private int position;
+    private int position, score = 0, hit = 1, miss = 1;
     private String targetWord = "null";
     private int choicesIndex = 0;
 
@@ -54,6 +41,7 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         //videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptionPath();
         //Views
         txtDisplay = findViewById(R.id.txtDisplay);
+        txtScore = findViewById(R.id.txtScore);
 
         //Buttons Listeners
         findViewById(R.id.quitGameButton).setOnClickListener(this);
@@ -139,7 +127,7 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
                 txtDisplay.setTextColor(Color.parseColor(	"#878383"));
 
                 if (text.getText().contains("_")){
-                    wrongChoice = "NULL";
+                    wrongChoice = "null";
                     PlayGameActivity.this.setChoicesButtons(true);
                     PlayGameActivity.this.choicesIndex ++;
                 }
@@ -192,16 +180,17 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         String txtDisplayString = txtDisplay.getText() + "";
         targetWord = SignInActivity.videoList.get(position).getChoices().get(choicesIndex-1).getTargetWord();
 
-        if(wrongChoice != "NULL" && !choice.equals(targetWord)){
+        if(wrongChoice != "null" && !choice.equals(targetWord)){
             txtDisplay.setTextColor(Color.parseColor(	"#FF0000"));
             txtDisplayString = txtDisplayString.replace("X_" + wrongChoice + "_X", "X_" + choice + "_X");
             wrongChoice = choice;
 
         }
-        else if (wrongChoice != "NULL" && choice.equals(targetWord)){
+        else if (wrongChoice != "null" && choice.equals(targetWord)){
             txtDisplay.setTextColor(Color.parseColor(	"#3CB371"));
             txtDisplayString = txtDisplayString.replace("X_" + wrongChoice + "_X", choice);
             PlayGameActivity.this.setChoicesButtons(false);
+            score += 100;
         }
         else if (!choice.equals(targetWord)){
             txtDisplay.setTextColor(Color.parseColor(	"#FF0000"));
@@ -212,8 +201,10 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
             txtDisplay.setTextColor(Color.parseColor(	"#3CB371"));
             txtDisplayString = txtDisplayString.replace(generateUnderscores(targetWord), choice);
             PlayGameActivity.this.setChoicesButtons(false);
+            score += 100;
         }
 
+        txtScore.setText("Score: " + score);
         txtDisplay.setText(txtDisplayString);
         Log.d("txtDisplayString", txtDisplayString);
     }
