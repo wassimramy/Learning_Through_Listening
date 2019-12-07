@@ -16,6 +16,20 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/txtScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:textSize="12pt"
+            android:fontFamily="serif"
+            android:paddingTop="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:text="Score: 0" />
     <TextView
         android:id="@+id/txtDisplay"
         android:layout_width="match_parent"
@@ -28,7 +42,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
-        android:text="Transcript Display" />
+        android:text="..." />
 
     </LinearLayout>
 
