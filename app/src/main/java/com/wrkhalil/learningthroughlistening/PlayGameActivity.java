@@ -19,13 +19,11 @@ import java.util.Locale;
 public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener, View.OnClickListener {
     private static Handler handler = new Handler();
     private TextView txtDisplay, txtScore;
-    private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath, wrongChoice;
+    private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath, wrongChoice, targetWord = "null";
     private MediaPlayer player;
-    private Button pauseButton;
-    private Button firstChoiceButton, secondChoiceButton, thirdChoiceButton, fourthChoiceButton;
-    private int position, score = 0, hit = 1, miss = 1;
-    private String targetWord = "null";
-    private int choicesIndex = 0;
+    private Button pauseButton, firstChoiceButton, secondChoiceButton, thirdChoiceButton, fourthChoiceButton;
+    private int position, score = 0, hit = 1, miss = 1, choicesIndex = 0;
+    private boolean choiceButtonStatus = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,10 +95,34 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         PlayGameActivity.this.fourthChoiceButton.setText(
                 SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFourthChoice());
 
+        setChoiceButtonStatus(choicesEnable);
+    }
+
+    private void setChoiceButtonStatus(boolean choicesEnable){
         PlayGameActivity.this.firstChoiceButton.setEnabled(choicesEnable);
         PlayGameActivity.this.secondChoiceButton.setEnabled(choicesEnable);
         PlayGameActivity.this.thirdChoiceButton.setEnabled(choicesEnable);
         PlayGameActivity.this.fourthChoiceButton.setEnabled(choicesEnable);
+
+        if (choicesEnable){
+            PlayGameActivity.this.firstChoiceButton.setText(
+                    SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFirstChoice());
+
+            PlayGameActivity.this.secondChoiceButton.setText(
+                    SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getSecondChoice());
+
+            PlayGameActivity.this.thirdChoiceButton.setText(
+                    SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getThirdChoice());
+
+            PlayGameActivity.this.fourthChoiceButton.setText(
+                    SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFourthChoice());
+        }
+        else{
+            PlayGameActivity.this.firstChoiceButton.setText(generateUnderscores(PlayGameActivity.this.firstChoiceButton.getText().toString()));
+            PlayGameActivity.this.secondChoiceButton.setText(generateUnderscores(PlayGameActivity.this.secondChoiceButton.getText().toString()));
+            PlayGameActivity.this.thirdChoiceButton.setText(generateUnderscores(PlayGameActivity.this.thirdChoiceButton.getText().toString()));
+            PlayGameActivity.this.fourthChoiceButton.setText(generateUnderscores(PlayGameActivity.this.fourthChoiceButton.getText().toString()));
+        }
 
     }
 
@@ -157,12 +179,15 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     // Pause The Game
     public void pauseGame() {
         pauseButton.setText("Start");
+        choiceButtonStatus = firstChoiceButton.isEnabled();
+        setChoiceButtonStatus(false);
         player.pause();
     }
 
     // Start The Game
     public void startGame() {
         pauseButton.setText("Pause");
+        setChoiceButtonStatus(choiceButtonStatus);
         player.start();
     }
 
