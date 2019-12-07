@@ -1,6 +1,7 @@
 package com.wrkhalil.learningthroughlistening;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,15 +44,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ItemViewHold
         holder.itemTitleTextView.setText(list.get(position).getTitle()); //Set the itemTitleTextView in the row layout to "Image " + position to enumerate the pictures
 
         holder.itemDescriptionTextView.setText(list.get(position).getPlays() + " Plays"); //Set the itemDateAndTime in the row layout to the formatted date and time
+
         RequestOptions requestOptions = new RequestOptions(); //Set the options of for the displayed picture
         requestOptions.placeholder(R.drawable.ic_launcher_background); //Picture displayed when the app is fetching the picture
         requestOptions.error(R.drawable.ic_launcher_background); //Picture displayed when the picture is not fetched
         requestOptions.circleCrop(); //Display the picture in a circle view
         requestOptions.override(600, 600); //Set the resolution of the picture
-        Glide.with(context)
-                .load(Uri.parse(list.get(position).getThumbnailURL())) // Uri of the picture
-                .apply(requestOptions) // Set the options
-                .into(holder.itemImage); // The container where the picture is displayed
+            Glide.with(context)
+                    .load(Uri.parse(list.get(position).getThumbnailURL())) // Uri of the picture
+                    .apply(requestOptions) // Set the options
+                    .into(holder.itemImage); // The container where the picture is displayed
+
         holder.itemView.setOnClickListener(v -> onMyAdapterItemClickListener.onItemClicked(position)); //Return the position of the item when it is clicked by the user
     }
 

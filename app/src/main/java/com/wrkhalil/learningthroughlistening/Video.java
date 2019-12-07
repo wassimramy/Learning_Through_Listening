@@ -1,6 +1,8 @@
 package com.wrkhalil.learningthroughlistening;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Video {
 
@@ -32,6 +34,13 @@ public class Video {
         ChooseDifficultyActivity.fetchingAudio = false;
         ChooseDifficultyActivity.settingButtonsStatus();
         audioFileRetriever = new AudioFileRetriever(id);
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("plays", plays);
+        return result;
     }
 
     public String getClosedCaptionPath() {

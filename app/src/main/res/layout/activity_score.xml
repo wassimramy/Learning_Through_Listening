@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
     android:weightSum="4"
-    tools:context=".ChooseDifficultyActivity">
+    tools:context=".ScoreActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +37,7 @@
             android:text="Song Title" />
 
         <TextView
-            android:id="@+id/txtDisplay"
+            android:id="@+id/txtScore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="12pt"
@@ -49,86 +48,44 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingBottom="16dp"
-            android:text="Choose Difficulty:" />
+            android:text="Score:" />
 
     </LinearLayout>
 
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/grey_300">
 
-
         <LinearLayout
-            android:id="@+id/easyGame"
+            android:id="@+id/signOutAndBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:paddingBottom="144dp"
-            android:visibility="visible"
-            android:layout_weight="1"
-            tools:visibility="visible">
-
-
-            <Button
-                android:id="@+id/easyGameButton"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Easy"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/mediumGame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="80dp"
-            android:visibility="visible"
             tools:visibility="visible">
 
             <Button
-                android:id="@+id/mediumGameButton"
+                android:id="@+id/submitScoreButton"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Medium"
+                android:layout_weight="1"
+                android:text="Submit Score"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/hardGame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp"
-            android:visibility="visible"
-            tools:visibility="visible">
 
             <Button
-                android:id="@+id/hardGameButton"
+                android:id="@+id/backButton"
                 style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Hard"
+                android:layout_weight="1"
+                android:text="Back"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
-
         </LinearLayout>
 
     </RelativeLayout>
