@@ -17,6 +17,7 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
         View.OnClickListener {
 
     public static Button easyGameButton, mediumGameButton, hardGameButton;
+    public static boolean fetchingTranscript, fetchingAudio = false;
     private int position;
 
     @Override
@@ -35,9 +36,7 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
         mediumGameButton.setOnClickListener(this);
         hardGameButton.setOnClickListener(this);
 
-        easyGameButton.setEnabled(false);
-        mediumGameButton.setEnabled(false);
-        hardGameButton.setEnabled(false);
+        settingButtonsStatus();
 
         videoList.get(position).generateClosedCaption();
         videoList.get(position).downloadAudioFile();
@@ -50,6 +49,19 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
         intent.putExtra("Difficulty", difficulty); //Sends the URI value to the ShowPictureActivity to fetch the picture
         startActivity(intent); //Start the activity
         this.finish();
+    }
+
+    public static void settingButtonsStatus(){
+        if (fetchingTranscript && fetchingAudio){
+            easyGameButton.setEnabled(true);
+            mediumGameButton.setEnabled(true);
+            hardGameButton.setEnabled(true);
+        }
+        else{
+            easyGameButton.setEnabled(false);
+            mediumGameButton.setEnabled(false);
+            hardGameButton.setEnabled(false);
+        }
     }
 
     public void onResume() {

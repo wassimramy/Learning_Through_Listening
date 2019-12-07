@@ -23,10 +23,14 @@ public class Video {
 
 
     public void generateClosedCaption(){
+        ChooseDifficultyActivity.fetchingTranscript = false;
+        ChooseDifficultyActivity.settingButtonsStatus();
         closedCaption = new ClosedCaption(id);
     }
 
     public void downloadAudioFile(){
+        ChooseDifficultyActivity.fetchingAudio = false;
+        ChooseDifficultyActivity.settingButtonsStatus();
         audioFileRetriever = new AudioFileRetriever(id);
     }
 

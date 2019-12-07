@@ -42,7 +42,11 @@ public class ClosedCaption {
                     // Display the first 500 characters of the response string.
                     parseSRTFile(response);
                     Log.d("Response from nitrxgen:", "SRT File is fetched successfully " + id);
-                }, error -> Log.d("Response from nitrxgen:", "SRT File is unavailable " + id));
+                }, error -> {
+
+            Log.d("Response from nitrxgen:", "SRT File is unavailable " + id);
+            getSRTFile();
+        });
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
@@ -58,8 +62,15 @@ public class ClosedCaption {
                     // Display the first 500 characters of the response string.
                     Log.d("Response from nitrxgen:", "TXT File is fetched successfully " + id);
                     parseTXTFile(response);
+                    ChooseDifficultyActivity.fetchingTranscript = true;
+                    ChooseDifficultyActivity.settingButtonsStatus();
 
-                }, error -> Log.d("Response from nitrxgen:", "TXT File is unavailable " + id));
+                }, error -> {
+            ChooseDifficultyActivity.fetchingTranscript = false;
+            ChooseDifficultyActivity.settingButtonsStatus();
+            Log.d("Response from nitrxgen:", "TXT File is unavailable " + id);
+            getTXTFile();
+        });
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
