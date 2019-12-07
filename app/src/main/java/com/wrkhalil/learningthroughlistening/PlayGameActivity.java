@@ -304,6 +304,9 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
             pauseGame();
             goBackToChooseGameActivity();
         }
+        else if ((keyCode == KeyEvent.KEYCODE_POWER)){
+            pauseGame();
+        }
         return super.onKeyDown(keyCode, event);
     }
 

@@ -67,7 +67,7 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
 
     // Back to Choose Game Activity
     public void goBackToChooseGameActivity() {
-        Intent intent = new Intent(this, ChooseGameActivity.class);
+        Intent intent = new Intent(this, SignInActivity.class);
         startActivity(intent); //Start the activity
         this.finish();
     }
