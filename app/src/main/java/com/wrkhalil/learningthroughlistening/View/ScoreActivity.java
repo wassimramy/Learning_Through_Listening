@@ -74,7 +74,6 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
     }
 
     private void submitScore(){
-
         Model.operatingUser.score += score;
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");

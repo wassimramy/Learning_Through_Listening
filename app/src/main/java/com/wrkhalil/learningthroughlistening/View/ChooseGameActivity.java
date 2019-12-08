@@ -44,7 +44,4 @@ public class ChooseGameActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
     }
-
-
-
 }

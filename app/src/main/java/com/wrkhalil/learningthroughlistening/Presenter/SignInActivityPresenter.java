@@ -1,5 +1,6 @@
 package com.wrkhalil.learningthroughlistening.Presenter;
 
+import android.content.Intent;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -7,6 +8,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseUser;
 import com.wrkhalil.learningthroughlistening.Model.Model;
 import com.wrkhalil.learningthroughlistening.R;
+import com.wrkhalil.learningthroughlistening.View.ChooseGameActivity;
+import com.wrkhalil.learningthroughlistening.View.GoogleSignInActivity;
 import com.wrkhalil.learningthroughlistening.View.SignInActivity;
 
 import static com.wrkhalil.learningthroughlistening.View.SignInActivity.startANewGame;
@@ -22,13 +25,11 @@ public class SignInActivityPresenter {
     }
 
     public void populateVideoListFromFirebase() {
-     model.populateVideoListFromFirebase();
+        model.populateVideoListFromFirebase();
     }
 
     public void checkSignInStatus() {
-
         FirebaseUser currentUser = model.checkSignInStatus();
-        setStartANewGameStatus(false);
         if (currentUser != null){
             updateUIForLoggedInUser(currentUser);
         }
@@ -36,7 +37,6 @@ public class SignInActivityPresenter {
             updateUIForLoggedOutUser();
         }
         view.scoreTextView.setText("Total Score: " + Model.operatingUser.score);
-        setStartANewGameStatus(true);
     }
 
     public static void setStartANewGameStatus(boolean status){
@@ -51,7 +51,7 @@ public class SignInActivityPresenter {
 
     public void startANewGame() {
         if (!model.checkForNullValues()){
-            view.startChooseGameActivity();
+            startChooseGameActivity();
         }
     }
 
@@ -78,5 +78,16 @@ public class SignInActivityPresenter {
 
     public static void printScore(int score){
         SignInActivity.scoreTextView.setText("Score: " + score);
+    }
+
+    public void signInWithGoogle() {
+        Intent intent = new Intent(view, GoogleSignInActivity.class);
+        view.startActivity(intent);
+        view.finish();
+    }
+
+    public void startChooseGameActivity() {
+        Intent intent = new Intent(view, ChooseGameActivity.class);
+        view.startActivity(intent);
     }
 }
