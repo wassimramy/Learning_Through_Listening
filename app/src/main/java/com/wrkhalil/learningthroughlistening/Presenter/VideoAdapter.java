@@ -1,7 +1,6 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.Presenter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.wrkhalil.learningthroughlistening.Model.Video;
+import com.wrkhalil.learningthroughlistening.R;
 
 import java.util.List;
 

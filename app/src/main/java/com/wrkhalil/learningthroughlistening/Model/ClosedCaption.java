@@ -1,4 +1,4 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.Model;
 
 import android.util.Log;
 
@@ -6,6 +6,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.wrkhalil.learningthroughlistening.Presenter.ChooseDifficultyActivityPresenter;
+import com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity;
 
 import java.util.List;
 
@@ -61,12 +63,12 @@ public class ClosedCaption {
                     // Display the first 500 characters of the response string.
                     Log.d("Response from nitrxgen:", "TXT File is fetched successfully " + id);
                     parseTXTFile(response);
-                    ChooseDifficultyActivity.fetchingTranscript = true;
-                    ChooseDifficultyActivity.settingButtonsStatus();
+                    Model.fetchingTranscript = true;
+                    ChooseDifficultyActivityPresenter.settingButtonsStatus();
 
                 }, error -> {
-            ChooseDifficultyActivity.fetchingTranscript = false;
-            ChooseDifficultyActivity.settingButtonsStatus();
+            Model.fetchingTranscript = false;
+            ChooseDifficultyActivityPresenter.settingButtonsStatus();
             Log.d("Response from nitrxgen:", "TXT File is unavailable " + id);
             getTXTFile();
         });

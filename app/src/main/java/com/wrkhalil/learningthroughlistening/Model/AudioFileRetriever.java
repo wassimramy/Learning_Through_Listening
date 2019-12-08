@@ -1,15 +1,12 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.Model;
 
-import android.app.ProgressDialog;
 import android.util.Log;
+import android.view.Display;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.wrkhalil.learningthroughlistening.Presenter.ChooseDifficultyActivityPresenter;
+import com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,14 +44,14 @@ public class AudioFileRetriever {
         gsReference.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
             // Local temp file has been created
             AudioFileRetriever.this.trackPath = finalLocalFile.getAbsolutePath();
-            ChooseDifficultyActivity.fetchingAudio = true;
-            ChooseDifficultyActivity.settingButtonsStatus();
+            Model.fetchingAudio = true;
+            ChooseDifficultyActivityPresenter.settingButtonsStatus();
             Log.d("Fetching mp3 File", "Location on mobile device: "
                     + finalLocalFile.getAbsolutePath());
         }).addOnFailureListener(exception -> {
             // Handle any errors
-            ChooseDifficultyActivity.fetchingAudio = false;
-            ChooseDifficultyActivity.settingButtonsStatus();
+            Model.fetchingAudio = false;
+            ChooseDifficultyActivityPresenter.settingButtonsStatus();
             downloadTrack();
         });
     }

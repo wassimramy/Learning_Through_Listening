@@ -1,11 +1,11 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.View;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,12 +15,13 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wrkhalil.learningthroughlistening.Model.Model;
+import com.wrkhalil.learningthroughlistening.R;
 
 public class ScoreActivity extends Activity implements View.OnClickListener {
 
@@ -50,11 +51,11 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
         requestOptions.circleCrop(); //Display the picture in a circle view
         requestOptions.override(600, 600); //Set the resolution of the picture
         Glide.with(this)
-                .load(Uri.parse(SignInActivity.videoList.get(position).getThumbnailURL())) // Uri of the picture
+                .load(Uri.parse(Model.videoList.get(position).getThumbnailURL())) // Uri of the picture
                 .apply(requestOptions) // Set the options
                 .into(songThumbnail); // The container where the picture is displayed
 
-        txtSongTitle.setText(SignInActivity.videoList.get(position).getTitle());
+        txtSongTitle.setText(Model.videoList.get(position).getTitle());
         txtScore.setText("Score: " + score);
 
         //Buttons Listeners
@@ -74,17 +75,17 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
 
     private void submitScore(){
 
-        MainActivity.operatingUser.score += score;
+        Model.operatingUser.score += score;
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-        final DatabaseReference usersRef = ref.child( MainActivity.operatingUser.firebaseID);
+        final DatabaseReference usersRef = ref.child( Model.operatingUser.firebaseID);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                usersRef.setValue(MainActivity.operatingUser.toMap());
+                usersRef.setValue(Model.operatingUser.toMap());
                 updateNumberOfPlays();
-                Log.d("Account Info Updated:", MainActivity.operatingUser.fullName + " " + MainActivity.operatingUser.score);
+                Log.d("Account Info Updated:", Model.operatingUser.fullName + " " + Model.operatingUser.score);
             }
 
             @Override
@@ -95,16 +96,16 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
 
     private void updateNumberOfPlays(){
 
-        SignInActivity.videoList.get(position).plays ++;
+        Model.videoList.get(position).plays ++;
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
-        final DatabaseReference usersRef = ref.child(SignInActivity.videoList.get(position).id);
+        final DatabaseReference usersRef = ref.child(Model.videoList.get(position).id);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                usersRef.setValue(SignInActivity.videoList.get(position).toMap());
-                Log.d("Video Info Updated:", SignInActivity.videoList.get(position).plays + " Plays");
+                usersRef.setValue(Model.videoList.get(position).toMap());
+                Log.d("Video Info Updated:", Model.videoList.get(position).plays + " Plays");
             }
 
             @Override

@@ -1,4 +1,4 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.View;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,13 +8,15 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.wrkhalil.learningthroughlistening.R;
+import com.wrkhalil.learningthroughlistening.Model.User;
+
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity {
 
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
-    public static User operatingUser;
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {

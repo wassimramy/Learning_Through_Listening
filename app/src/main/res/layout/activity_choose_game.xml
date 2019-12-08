@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10pt"
-    tools:context=".ChooseGameActivity">
+    tools:context=".View.ChooseGameActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler_view"

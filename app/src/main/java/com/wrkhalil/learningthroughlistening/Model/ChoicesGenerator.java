@@ -1,4 +1,4 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.Model;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:weightSum="4"
-    tools:context=".ScoreActivity">
+    tools:context=".View.ScoreActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
