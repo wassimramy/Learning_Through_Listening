@@ -3,6 +3,7 @@ package com.wrkhalil.learningthroughlistening;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -231,5 +232,15 @@ public class GoogleSignInActivity extends MainActivity implements
         } else if (i == R.id.backButton || i == R.id.backWithoutSignInButton) {
             goBackToSignInActivity();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            goBackToSignInActivity();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

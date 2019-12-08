@@ -89,23 +89,21 @@ public class ChoicesGenerator {
         }
 
         Collections.shuffle(choices);
+        checkForNullChoices(shuffledWords);
     }
 
+    private void checkForNullChoices(List<String> shuffledWords){
 
-    private void randomizeChoice(){
-        String temporary;
-
-        int randomNumber = getRandomIntegerBetweenRange(0, 3);
-
-
-
+        for (int i = 0 ; i < choices.size() ; i ++){
+            if (choices.get(i).equals("null")){
+                choices.set(i, returnRandomWord(shuffledWords));
+            }
+        }
     }
 
-
-    private int getRandomIntegerBetweenRange (int min, int max){
-        return (int)(Math.random()*((max-min)+1))+min;
+    private String returnRandomWord(List<String> shuffledWords){
+        Collections.shuffle(shuffledWords);
+        return shuffledWords.get(0);
     }
-
-
 
 }

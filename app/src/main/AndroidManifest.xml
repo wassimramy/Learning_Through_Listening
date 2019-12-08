@@ -38,6 +38,10 @@
             android:name=".ChooseDifficultyActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".ScoreActivity"
+            android:windowSoftInputMode="adjustResize" />
+
     </application>
 
 

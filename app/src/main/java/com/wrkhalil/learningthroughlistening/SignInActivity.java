@@ -1,30 +1,19 @@
 package com.wrkhalil.learningthroughlistening;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -35,16 +24,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class SignInActivity extends AppCompatActivity implements
         View.OnClickListener {
 
-    private TextView titleTextView;
+    private TextView titleTextView, scoreTextView;
     private ImageView loginAvatar;
     private Button startANewGame;
     public static List<Video> videoList = new ArrayList<>();
@@ -57,6 +43,7 @@ public class SignInActivity extends AppCompatActivity implements
 
         // Views
         titleTextView = findViewById(R.id.titleText);
+        scoreTextView = findViewById(R.id.scoreText);
         loginAvatar = findViewById(R.id.loginAvatar);
 
         //Buttons
@@ -88,8 +75,8 @@ public class SignInActivity extends AppCompatActivity implements
         }
         else{
             Log.d("Sign In", "A user is logged in");
-            updateUIForLoggedInUser(currentUser);
             fetchUserDataFromFirebase(currentUser);
+            updateUIForLoggedInUser(currentUser);
         }
     }
 
@@ -125,6 +112,7 @@ public class SignInActivity extends AppCompatActivity implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 MainActivity.operatingUser  = dataSnapshot.getValue(User.class);
+                scoreTextView.setText("Total Score: " + MainActivity.operatingUser.score);
                 Log.d("Operating User Score", MainActivity.operatingUser.score + "");
             }
 
@@ -150,9 +138,32 @@ public class SignInActivity extends AppCompatActivity implements
         this.finish();
     }
 
+    private boolean checkForNullValues(){
+        for (int i = 0 ; i < videoList.size() ; i++){
+            if (videoList.get(i).getThumbnailURL() == null ||
+            videoList.get(i).getTitle() == null){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void startANewGame() {
-        Intent intent = new Intent(this, ChooseGameActivity.class);
-        startActivity(intent);
+        if (!checkForNullValues()){
+            Intent intent = new Intent(this, ChooseGameActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void setStartANewGameStatus(boolean status){
+
+        if (status){
+            startANewGame.setText("Start a New Game");
+        }
+        else{
+            startANewGame.setText("Loading List");
+        }
+        startANewGame.setEnabled(status);
     }
 
     @Override
@@ -170,7 +181,7 @@ public class SignInActivity extends AppCompatActivity implements
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
-        findViewById(R.id.startANewGameButton).setEnabled(false);
+        setStartANewGameStatus(false);
 
         if (videoList.size()>1){
             videoList = new ArrayList<>();
@@ -186,7 +197,7 @@ public class SignInActivity extends AppCompatActivity implements
                     for (int i = 0 ; i < videoList.size() ; i++){
                         Log.d("videoList[" + i +"]", videoList.get(i).id + " ");
                     }
-                findViewById(R.id.startANewGameButton).setEnabled(true);
+                setStartANewGameStatus(true);
             }
 
             @Override
@@ -207,6 +218,7 @@ public class SignInActivity extends AppCompatActivity implements
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
+                setStartANewGameStatus(false);
                 Log.w("loadPost:onCancelled", databaseError.toException());
             }
         };
