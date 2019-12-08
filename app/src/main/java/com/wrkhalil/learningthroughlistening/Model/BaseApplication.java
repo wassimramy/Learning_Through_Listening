@@ -1,4 +1,4 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.Model;
 
 import android.app.Application;
 import android.content.Context;

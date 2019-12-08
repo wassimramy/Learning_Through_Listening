@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
-        android:name=".BaseApplication"
+        android:name=".Model.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.wrkhalil.learningthroughlistening.SignInActivity">
+        <activity android:name="com.wrkhalil.learningthroughlistening.View.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,22 +24,22 @@
         </activity>
 
         <activity
-            android:name=".GoogleSignInActivity"
+            android:name=".View.GoogleSignInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ChooseGameActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
-            android:name=".PlayGameActivity"
+            android:name=".View.ChooseGameActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".ChooseDifficultyActivity"
+            android:name=".View.PlayGameActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".ScoreActivity"
+            android:name=".View.ChooseDifficultyActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".View.ScoreActivity"
             android:windowSoftInputMode="adjustResize" />
 
     </application>

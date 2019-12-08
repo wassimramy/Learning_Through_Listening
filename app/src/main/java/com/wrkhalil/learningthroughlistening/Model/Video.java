@@ -1,4 +1,7 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.Model;
+
+import com.wrkhalil.learningthroughlistening.Presenter.ChooseDifficultyActivityPresenter;
+import com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +28,14 @@ public class Video {
 
 
     public void generateClosedCaption(){
-        ChooseDifficultyActivity.fetchingTranscript = false;
-        ChooseDifficultyActivity.settingButtonsStatus();
+        Model.fetchingTranscript = false;
+        ChooseDifficultyActivityPresenter.settingButtonsStatus();
         closedCaption = new ClosedCaption(id);
     }
 
     public void downloadAudioFile(){
-        ChooseDifficultyActivity.fetchingAudio = false;
-        ChooseDifficultyActivity.settingButtonsStatus();
+        Model.fetchingAudio = false;
+        ChooseDifficultyActivityPresenter.settingButtonsStatus();
         audioFileRetriever = new AudioFileRetriever(id);
     }
 

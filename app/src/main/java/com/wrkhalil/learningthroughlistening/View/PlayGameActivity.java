@@ -1,4 +1,4 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.View;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -13,6 +13,9 @@ import android.widget.TextView;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.wrkhalil.learningthroughlistening.Model.Model;
+import com.wrkhalil.learningthroughlistening.R;
 
 import java.util.Locale;
 
@@ -34,9 +37,9 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         Intent intent = getIntent();
         position = intent.getIntExtra ("Position", 0); //get the URI value from the previous activity
 
-        videoID = SignInActivity.videoList.get(position).id;
-        videoThumbnailURL = SignInActivity.videoList.get(position).getThumbnailURL();
-        videoTrackPath = SignInActivity.videoList.get(position).getTrackPath();
+        videoID = Model.videoList.get(position).id;
+        videoThumbnailURL = Model.videoList.get(position).getThumbnailURL();
+        videoTrackPath = Model.videoList.get(position).getTrackPath();
 
         //videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptionPath();
         //Views
@@ -66,7 +69,7 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
 
         player = MediaPlayer.create(this, trackFileUri);
         try {
-            player.addTimedTextSource(SignInActivity.videoList.get(position).getClosedCaptionPath() ,
+            player.addTimedTextSource(Model.videoList.get(position).getClosedCaptionPath() ,
                     MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
             int textTrackIndex = findTrackIndexFor(
                     MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT, player.getTrackInfo());
@@ -96,16 +99,16 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     private void setChoicesButtons(boolean choicesEnable){
 
         PlayGameActivity.this.firstChoiceButton.setText(
-                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFirstChoice());
+                Model.videoList.get(position).getChoices().get(choicesIndex).getFirstChoice());
 
         PlayGameActivity.this.secondChoiceButton.setText(
-                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getSecondChoice());
+                Model.videoList.get(position).getChoices().get(choicesIndex).getSecondChoice());
 
         PlayGameActivity.this.thirdChoiceButton.setText(
-                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getThirdChoice());
+                Model.videoList.get(position).getChoices().get(choicesIndex).getThirdChoice());
 
         PlayGameActivity.this.fourthChoiceButton.setText(
-                SignInActivity.videoList.get(position).getChoices().get(choicesIndex).getFourthChoice());
+                Model.videoList.get(position).getChoices().get(choicesIndex).getFourthChoice());
 
         setChoiceButtonStatus(choicesEnable);
     }
@@ -167,7 +170,7 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
                 if (text.getText().contains("_")){
                     wrongChoice = "null";
                     PlayGameActivity.this.setChoicesButtons(true);
-                    if (PlayGameActivity.this.choicesIndex < SignInActivity.videoList.get(position).getChoices().size()-1){
+                    if (PlayGameActivity.this.choicesIndex < Model.videoList.get(position).getChoices().size()-1){
                         PlayGameActivity.this.choicesIndex ++;
                     }
                 }
@@ -222,7 +225,7 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     // Check if the choice is Correct
     public void receiveChoice(String choice) {
         String txtDisplayString = txtDisplay.getText() + "";
-        targetWord = SignInActivity.videoList.get(position).getChoices().get(choicesIndex-1).getTargetWord();
+        targetWord = Model.videoList.get(position).getChoices().get(choicesIndex-1).getTargetWord();
 
         if(wrongChoice != "null" && !choice.equals(targetWord)){
             txtDisplay.setTextColor(Color.parseColor(	"#FF0000"));

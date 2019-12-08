@@ -1,4 +1,4 @@
-package com.wrkhalil.learningthroughlistening;
+package com.wrkhalil.learningthroughlistening.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +26,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.wrkhalil.learningthroughlistening.Model.Model;
+import com.wrkhalil.learningthroughlistening.R;
+import com.wrkhalil.learningthroughlistening.Model.User;
 
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
@@ -177,7 +180,7 @@ public class GoogleSignInActivity extends MainActivity implements
 
     private void checkIfUserExists(final FirebaseUser user){
 
-        MainActivity.operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
+        Model.operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
         final DatabaseReference usersRef = ref.child(user.getUid());
@@ -186,12 +189,12 @@ public class GoogleSignInActivity extends MainActivity implements
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.hasChild(user.getUid())) {
-                    MainActivity.operatingUser  = snapshot.child(user.getUid()).getValue(User.class);
-                    Log.d("Account Info Fetched:", MainActivity.operatingUser.fullName + " " + MainActivity.operatingUser.score);
+                    Model.operatingUser  = snapshot.child(user.getUid()).getValue(User.class);
+                    Log.d("Account Info Fetched:", Model.operatingUser.fullName + " " + Model.operatingUser.score);
                 }
                 else{
-                    operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
-                    usersRef.setValue(operatingUser.toMap());
+                    Model.operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
+                    usersRef.setValue(Model.operatingUser.toMap());
                 }
             }
 
