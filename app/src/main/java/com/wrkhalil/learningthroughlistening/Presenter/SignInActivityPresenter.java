@@ -36,7 +36,13 @@ public class SignInActivityPresenter {
         else{
             updateUIForLoggedOutUser();
         }
-        view.scoreTextView.setText("Total Score: " + Model.operatingUser.score);
+
+        if (Model.operatingUser != null) {
+            view.scoreTextView.setText("Total Score: " + Model.operatingUser.score);
+        }
+        else{
+            view.scoreTextView.setText("");
+        }
     }
 
     public static void setStartANewGameStatus(boolean status){
