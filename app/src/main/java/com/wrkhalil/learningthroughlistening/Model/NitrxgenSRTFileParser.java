@@ -25,17 +25,14 @@ public class NitrxgenSRTFileParser {
     private void generateNewSRTFile(){
 
         String subString;
-        int line = 0, start = 0, end = 0;
+        int start = 0, end;
         for (int i = 0 ; i < transcript.length()-1; i++){
             if (transcript.charAt(i) == '\n'){
                 end = i;
                 subString = transcript.substring(start, end);
                 parsedTranscript.add(subString);
-                //Log.d( "NitrxgenSRTFileParser", parsedTranscript.get(line));
                 start = end+1;
-                line ++;
             }
         }
     }
-
 }

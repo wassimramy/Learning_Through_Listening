@@ -51,14 +51,6 @@ public class NitrxgenTXTFileParser {
 
                         omittedWords.add(replaceOmittedWordWithUnderscore(words.get(i)));
                         choices.add(new ChoicesGenerator(words.get(i), words));
-                        /*
-                        generatedTranscript.set (line, generatedTranscript.get(line) + " " +
-                                replaceOmittedWordWithUnderscore(words.get(i)) + " (" +
-                                choices.get(targetNumber).getFirstChoice() + ", " +
-                                choices.get(targetNumber).getSecondChoice() + ", " +
-                                choices.get(targetNumber).getThirdChoice() + ", " +
-                                choices.get(targetNumber).getFourthChoice() + ") ");
-                         */
 
                         generatedTranscript.set (line, generatedTranscript.get(line) + " " +
                                 replaceOmittedWordWithUnderscore(words.get(i)));
@@ -66,27 +58,20 @@ public class NitrxgenTXTFileParser {
                         targetWords.add(words.get(i));
                         targetWordsLineNumber.add(line);
 
-                        //text = text + " " + omittedWords.get(i) + " (" + targetWords.get(targetNumber) +" " + targetWordsLineNumber.get(targetNumber) + ")";
                         targetNumber ++;
                     }
                     else{
-                        //text = text + " " + words.get(i);
                         omittedWords.add(words.get(i));
                         generatedTranscript.set (line, generatedTranscript.get(line) + " " + words.get(i));
-                        //text = text + " " + omittedWords.get(i);
                     }
                 }
                 else{
-                    //text = text + " " + omittedWordsOffset.get(line) + "th word \n" +  words.get(i);
                     omittedWords.add(words.get(i));
                     generatedTranscript.add(words.get(i));
                     line ++;
                     numberOfWordsInALine = 1;
-                    //text = text + "\n" + omittedWords.get(i);
                 }
             }
-            //checkGeneratedTranscript();
-            //Log.d("Parsed Words of", text + " Line: " + line + " " + id);
         }
 
 
@@ -145,7 +130,6 @@ public class NitrxgenTXTFileParser {
                     words.add(closedCaptionsPlaintext.substring(start+1, end));
                     lineNumber.add(line);
                     numberOfWordsInALine ++;
-                    //Log.d("Parsed Word of", closedCaptionsPlaintext.substring(start+1, end) + " Line: " + line + " " + id + " " + start + " " + end);
                 }
                 start = end;
             }
