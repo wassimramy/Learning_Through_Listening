@@ -15,6 +15,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wrkhalil.learningthroughlistening.Model.Model;
+import com.wrkhalil.learningthroughlistening.Presenter.PlayGameActivityPresenter;
 import com.wrkhalil.learningthroughlistening.R;
 
 import java.util.Locale;
@@ -22,26 +23,26 @@ import java.util.Locale;
 
 public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.OnTimedTextListener, View.OnClickListener, MediaPlayer.OnCompletionListener {
     private static Handler handler = new Handler();
-    private TextView txtDisplay, txtScore;
-    private String videoID, videoThumbnailURL, videoClosedCaptions, videoTrackPath, wrongChoice,
-            targetWord = "null", firstChoice, secondChoice, thirdChoice, fourthChoice;
-    private MediaPlayer player;
-    private Button pauseButton, firstChoiceButton, secondChoiceButton, thirdChoiceButton, fourthChoiceButton;
-    private int position, score = 0, hit = 1, miss = 1, choicesIndex = 0, pauseChoicesIndex = 0;
-    private boolean choiceButtonStatus = false;
+    public TextView txtDisplay, txtScore;
+    private String videoTrackPath;
+    public MediaPlayer player;
+    public Button pauseButton, firstChoiceButton, secondChoiceButton, thirdChoiceButton, fourthChoiceButton;
+    private int position;
+    private PlayGameActivityPresenter playGameActivityPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_game);
+
+        playGameActivityPresenter = new PlayGameActivityPresenter(this);
+
         Intent intent = getIntent();
         position = intent.getIntExtra ("Position", 0); //get the URI value from the previous activity
+        playGameActivityPresenter.position = position;
 
-        videoID = Model.videoList.get(position).id;
-        videoThumbnailURL = Model.videoList.get(position).getThumbnailURL();
         videoTrackPath = Model.videoList.get(position).getTrackPath();
 
-        //videoClosedCaptions = SignInActivity.videoList.get(position).getClosedCaptionPath();
         //Views
         txtDisplay = findViewById(R.id.txtDisplay);
         txtScore = findViewById(R.id.txtScore);
@@ -58,7 +59,7 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         thirdChoiceButton.setOnClickListener(this);
         fourthChoiceButton.setOnClickListener(this);
 
-        setChoicesButtons(false);
+        playGameActivityPresenter.setChoicesButtons(false);
 
         pauseButton = findViewById(R.id.pauseButton);
         pauseButton.setOnClickListener(this);
@@ -87,62 +88,8 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
         }
     }
 
-    public void onCompletion(MediaPlayer arg0)
-    {
-        Intent intent = new Intent(this, ScoreActivity.class);
-        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
-        intent.putExtra("Score", score); //Sends the URI value to the ShowPictureActivity to fetch the picture
-        startActivity(intent); //Start the activity
-        this.finish();
-    }
-
-    private void setChoicesButtons(boolean choicesEnable){
-
-        PlayGameActivity.this.firstChoiceButton.setText(
-                Model.videoList.get(position).getChoices().get(choicesIndex).getFirstChoice());
-
-        PlayGameActivity.this.secondChoiceButton.setText(
-                Model.videoList.get(position).getChoices().get(choicesIndex).getSecondChoice());
-
-        PlayGameActivity.this.thirdChoiceButton.setText(
-                Model.videoList.get(position).getChoices().get(choicesIndex).getThirdChoice());
-
-        PlayGameActivity.this.fourthChoiceButton.setText(
-                Model.videoList.get(position).getChoices().get(choicesIndex).getFourthChoice());
-
-        setChoiceButtonStatus(choicesEnable);
-    }
-
-    private void setChoiceButtonStatus(boolean choicesEnable){
-
-        PlayGameActivity.this.firstChoiceButton.setEnabled(choicesEnable);
-        PlayGameActivity.this.secondChoiceButton.setEnabled(choicesEnable);
-        PlayGameActivity.this.thirdChoiceButton.setEnabled(choicesEnable);
-        PlayGameActivity.this.fourthChoiceButton.setEnabled(choicesEnable);
-
-        if (!choicesEnable){
-            PlayGameActivity.this.firstChoiceButton.setText(generateUnderscores(PlayGameActivity.this.firstChoiceButton.getText().toString()));
-            PlayGameActivity.this.secondChoiceButton.setText(generateUnderscores(PlayGameActivity.this.secondChoiceButton.getText().toString()));
-            PlayGameActivity.this.thirdChoiceButton.setText(generateUnderscores(PlayGameActivity.this.thirdChoiceButton.getText().toString()));
-            PlayGameActivity.this.fourthChoiceButton.setText(generateUnderscores(PlayGameActivity.this.fourthChoiceButton.getText().toString()));
-        }
-
-    }
-
-    private void fetchDataFromButtons(boolean choicesEnable){
-        if (!choicesEnable){
-            firstChoice = firstChoiceButton.getText().toString();
-            secondChoice = secondChoiceButton.getText().toString();
-            thirdChoice = thirdChoiceButton.getText().toString();
-            fourthChoice = fourthChoiceButton.getText().toString();
-        }
-        else{
-            firstChoiceButton.setText(firstChoice);
-            secondChoiceButton.setText(secondChoice);
-            thirdChoiceButton.setText(thirdChoice);
-            fourthChoiceButton.setText(fourthChoice);
-        }
-
+    public void onCompletion(MediaPlayer arg0) {
+    playGameActivityPresenter.showScoreActivity();
     }
 
     public void onResume() {
@@ -163,139 +110,42 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     public void onTimedText(final MediaPlayer mp, final TimedText text) {
         if (text != null) {
             handler.post(() -> {
-                //int seconds = mp.getCurrentPosition() / 10000;
-
-                txtDisplay.setTextColor(Color.parseColor(	"#878383"));
-
-                if (text.getText().contains("_")){
-                    wrongChoice = "null";
-                    PlayGameActivity.this.setChoicesButtons(true);
-                    if (PlayGameActivity.this.choicesIndex < Model.videoList.get(position).getChoices().size()-1){
-                        PlayGameActivity.this.choicesIndex ++;
-                    }
-                }
-                else {
-                    PlayGameActivity.this.setChoicesButtons(false);
-                }
-
-                txtDisplay.setText(text.getText());
+                playGameActivityPresenter.refreshPlayerDisplay(text);
             });
         }
-    }
-
-    // To display the seconds in the duration format 00:00:00
-    public String secondsToDuration(int seconds) {
-        return String.format("%02d:%02d:%02d", seconds / 3600,
-                (seconds % 3600) / 60, (seconds % 60), Locale.US);
-    }
-
-    // Back to Choose Game Activity
-    public void goBackToChooseGameActivity() {
-        Intent intent = new Intent(this, ChooseGameActivity.class);
-        startActivity(intent); //Start the activity
-        this.finish();
-    }
-
-    // Pause The Game
-    public void pauseGame() {
-        pauseButton.setText("Start");
-        choiceButtonStatus = firstChoiceButton.isEnabled();
-        fetchDataFromButtons(false);
-        setChoiceButtonStatus(false);
-        player.pause();
-    }
-
-    // Start The Game
-    public void startGame() {
-        pauseButton.setText("Pause");
-        setChoiceButtonStatus(choiceButtonStatus);
-        fetchDataFromButtons(choiceButtonStatus);
-        player.start();
-    }
-
-    private String generateUnderscores(String target){
-        String result;
-        result = "_";
-        for (int i = 1; i < target.length() ; i++){
-            result += "_";
-        }
-        return result;
-    }
-
-    // Check if the choice is Correct
-    public void receiveChoice(String choice) {
-        String txtDisplayString = txtDisplay.getText() + "";
-        targetWord = Model.videoList.get(position).getChoices().get(choicesIndex-1).getTargetWord();
-
-        if(wrongChoice != "null" && !choice.equals(targetWord)){
-            txtDisplay.setTextColor(Color.parseColor(	"#FF0000"));
-            txtDisplayString = txtDisplayString.replace("X_" + wrongChoice + "_X", "X_" + choice + "_X");
-            wrongChoice = choice;
-
-        }
-        else if (wrongChoice != "null" && choice.equals(targetWord)){
-            txtDisplay.setTextColor(Color.parseColor(	"#3CB371"));
-            txtDisplayString = txtDisplayString.replace("X_" + wrongChoice + "_X", choice);
-            PlayGameActivity.this.setChoicesButtons(false);
-            score += 100;
-        }
-        else if (!choice.equals(targetWord)){
-            txtDisplay.setTextColor(Color.parseColor(	"#FF0000"));
-            txtDisplayString = txtDisplayString.replace(generateUnderscores(targetWord), "X_" + choice + "_X");
-            wrongChoice = choice;
-        }
-        else{
-            txtDisplay.setTextColor(Color.parseColor(	"#3CB371"));
-            txtDisplayString = txtDisplayString.replace(generateUnderscores(targetWord), choice);
-            PlayGameActivity.this.setChoicesButtons(false);
-            score += 100;
-        }
-
-        txtScore.setText("Score: " + score);
-        txtDisplay.setText(txtDisplayString);
-        Log.d("txtDisplayString", txtDisplayString);
-    }
-
-
-    // Restart The Game
-    public void restartGame() {
-        Intent intent = new Intent(this, PlayGameActivity.class);
-        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
-        startActivity(intent); //Start the activity
-        this.finish();
     }
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.quitGameButton) {
-            pauseGame();
-            goBackToChooseGameActivity();
+            playGameActivityPresenter.pauseGame();
+            playGameActivityPresenter.goBackToChooseGameActivity();
         } else if (i == R.id.pauseButton) {
             Log.d("Button Hit", pauseButton.getText()+" ");
             if (pauseButton.getText().equals("Pause")){
                 Log.d("Button Hit", "Pause button is clicked");
-                pauseGame();
+                playGameActivityPresenter.pauseGame();
             }
             else if (pauseButton.getText().equals("Start")){
-                startGame();
+                playGameActivityPresenter.startGame();
             }
 
         } else if (i == R.id.restartButton) {
-            pauseGame();
-            restartGame();
+            playGameActivityPresenter.pauseGame();
+            playGameActivityPresenter.restartGame(position);
         }
         else if (i == R.id.firstChoiceButton){
-            receiveChoice(firstChoiceButton.getText().toString());
+            playGameActivityPresenter.receiveChoice(firstChoiceButton.getText().toString());
         }
         else if (i == R.id.secondChoiceButton){
-            receiveChoice(secondChoiceButton.getText().toString());
+            playGameActivityPresenter.receiveChoice(secondChoiceButton.getText().toString());
         }
         else if (i == R.id.thirdChoiceButton){
-            receiveChoice(thirdChoiceButton.getText().toString());
+            playGameActivityPresenter.receiveChoice(thirdChoiceButton.getText().toString());
         }
         else if (i == R.id.fourthChoiceButton){
-            receiveChoice(fourthChoiceButton.getText().toString());
+            playGameActivityPresenter.receiveChoice(fourthChoiceButton.getText().toString());
         }
     }
 
@@ -304,11 +154,11 @@ public class PlayGameActivity extends AppCompatActivity implements MediaPlayer.O
     {
         if ((keyCode == KeyEvent.KEYCODE_BACK))
         {
-            pauseGame();
-            goBackToChooseGameActivity();
+            playGameActivityPresenter.pauseGame();
+            playGameActivityPresenter.goBackToChooseGameActivity();
         }
         else if ((keyCode == KeyEvent.KEYCODE_POWER)){
-            pauseGame();
+            playGameActivityPresenter.pauseGame();
         }
         return super.onKeyDown(keyCode, event);
     }

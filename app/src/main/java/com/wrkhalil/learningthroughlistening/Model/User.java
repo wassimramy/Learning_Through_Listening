@@ -41,17 +41,17 @@ public class User {
         return result;
     }
 
-    private void submitScore(){
-        score += score;
+    public void submitScore(int calculatedScore){
+        score += calculatedScore;
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-        final DatabaseReference usersRef = ref.child( Model.operatingUser.firebaseID);
+        final DatabaseReference usersRef = ref.child(firebaseID);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                usersRef.setValue(Model.operatingUser.toMap());
-                Log.d("Account Info Updated:", Model.operatingUser.fullName + " " + Model.operatingUser.score);
+                usersRef.setValue(toMap());
+                Log.d("Account Info Updated:", fullName + " " + score);
             }
 
             @Override
