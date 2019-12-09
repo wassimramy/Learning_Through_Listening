@@ -1,5 +1,6 @@
 package com.wrkhalil.learningthroughlistening.Presenter;
 
+import android.content.Intent;
 import android.net.Uri;
 
 import com.bumptech.glide.Glide;
@@ -7,6 +8,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.wrkhalil.learningthroughlistening.Model.Model;
 import com.wrkhalil.learningthroughlistening.R;
 import com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity;
+import com.wrkhalil.learningthroughlistening.View.PlayGameActivity;
 import com.wrkhalil.learningthroughlistening.View.SignInActivity;
 
 import static com.wrkhalil.learningthroughlistening.Model.Model.fetchingAudio;
@@ -63,5 +65,13 @@ public class ChooseDifficultyActivityPresenter {
             mediumGameButton.setText(loadingStatement);
             hardGameButton.setText(loadingStatement);
         }
+    }
+
+    public void startGameActivity(int position, String difficulty){
+        Intent intent = new Intent(view, PlayGameActivity.class);
+        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        intent.putExtra("Difficulty", difficulty); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        view.startActivity(intent); //Start the activity
+        view.finish();
     }
 }

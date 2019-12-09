@@ -47,14 +47,6 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
         chooseDifficultyActivityPresenter.updateFields(position);
     }
 
-    public void startGameActivity(int position, String difficulty){
-        Intent intent = new Intent(this, PlayGameActivity.class);
-        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
-        intent.putExtra("Difficulty", difficulty); //Sends the URI value to the ShowPictureActivity to fetch the picture
-        startActivity(intent); //Start the activity
-        this.finish();
-    }
-
     public void onResume() {
         super.onResume();
     }
@@ -64,13 +56,13 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.easyGameButton) {
-            startGameActivity(position, "Easy");
+            chooseDifficultyActivityPresenter.startGameActivity(position, "Easy");
         }
         else if (i == R.id.mediumGameButton) {
-            startGameActivity(position, "Medium");
+            chooseDifficultyActivityPresenter.startGameActivity(position, "Medium");
         }
         else if (i == R.id.hardGameButton) {
-            startGameActivity(position, "Hard");
+            chooseDifficultyActivityPresenter.startGameActivity(position, "Hard");
         }
     }
 }

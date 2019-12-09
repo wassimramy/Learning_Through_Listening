@@ -68,17 +68,6 @@ public class SignInActivity extends AppCompatActivity implements
         signInActivityPresenter.populateVideoListFromFirebase();
     }
 
-    public void signInWithGoogle() {
-        Intent intent = new Intent(this, GoogleSignInActivity.class);
-        startActivity(intent);
-        this.finish();
-    }
-
-    public void startChooseGameActivity() {
-        Intent intent = new Intent(this, ChooseGameActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void onClick(View v) {
         int i = v.getId();
@@ -86,7 +75,7 @@ public class SignInActivity extends AppCompatActivity implements
             Log.d("Start a new game", "Click received");
             signInActivityPresenter.startANewGame();
         } else if (i == R.id.signInWithGoogleButton) {
-            signInWithGoogle();
+            signInActivityPresenter.signInWithGoogle();
         }
     }
 
