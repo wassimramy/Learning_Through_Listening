@@ -35,6 +35,23 @@ public class Model {
         return false;
     }
 
+    public void incrementNumberOfPlays(int position){
+        videoList.get(position).incrementNumberOfPlays();
+    }
+
+    public String generateUnderscores(String target){
+        String result;
+        result = "_";
+        for (int i = 1; i < target.length() ; i++){
+            result += "_";
+        }
+        return result;
+    }
+
+    public void submitScore(int calculatedScore){
+        operatingUser.submitScore(calculatedScore);
+    }
+
     public void populateVideoListFromFirebase() {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();

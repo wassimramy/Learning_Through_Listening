@@ -1,5 +1,14 @@
 package com.wrkhalil.learningthroughlistening.Model;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.wrkhalil.learningthroughlistening.Presenter.ChooseDifficultyActivityPresenter;
 import com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity;
 
@@ -44,6 +53,26 @@ public class Video {
         result.put("id", id);
         result.put("plays", plays);
         return result;
+    }
+
+    public void incrementNumberOfPlays(){
+
+        plays ++;
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
+        final DatabaseReference videosRef = ref.child(id);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                videosRef.setValue(toMap());
+                Log.d("Video Info Updated:", plays + " Plays");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 
     public String getClosedCaptionPath() {

@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wrkhalil.learningthroughlistening.Model.Model;
+import com.wrkhalil.learningthroughlistening.Presenter.ScoreActivityPresenter;
 import com.wrkhalil.learningthroughlistening.R;
 
 public class ScoreActivity extends Activity implements View.OnClickListener {
@@ -29,11 +30,14 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
     private TextView txtSongTitle, txtScore;
     private Button backButton, submitScoreButton;
     private int position, score;
+    private ScoreActivityPresenter scoreActivityPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
+
+        scoreActivityPresenter = new ScoreActivityPresenter(this);
         Intent intent = getIntent();
         position = intent.getIntExtra ("Position", 0); //get the URI value from the previous activity
         score = intent.getIntExtra ("Score", 0); //get the URI value from the previous activity
@@ -66,62 +70,16 @@ public class ScoreActivity extends Activity implements View.OnClickListener {
         submitScoreButton.setOnClickListener(this);
     }
 
-    // Back to Choose Game Activity
-    public void goBackToChooseGameActivity() {
-        Intent intent = new Intent(this, SignInActivity.class);
-        startActivity(intent); //Start the activity
-        this.finish();
-    }
-
-    private void submitScore(){
-        Model.operatingUser.score += score;
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-        final DatabaseReference usersRef = ref.child( Model.operatingUser.firebaseID);
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                usersRef.setValue(Model.operatingUser.toMap());
-                updateNumberOfPlays();
-                Log.d("Account Info Updated:", Model.operatingUser.fullName + " " + Model.operatingUser.score);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void updateNumberOfPlays(){
-
-        Model.videoList.get(position).plays ++;
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("server/saving-data/fireblog/videos");
-        final DatabaseReference usersRef = ref.child(Model.videoList.get(position).id);
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                usersRef.setValue(Model.videoList.get(position).toMap());
-                Log.d("Video Info Updated:", Model.videoList.get(position).plays + " Plays");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
     @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.backButton) {
-            goBackToChooseGameActivity();
+            scoreActivityPresenter.goBackToChooseGameActivity();
         }
         else if (i == R.id.submitScoreButton){
-            submitScore();
-            goBackToChooseGameActivity();
+            scoreActivityPresenter.submitScore(score);
+            scoreActivityPresenter.incrementNumberOfPlays(position);
+            scoreActivityPresenter.goBackToChooseGameActivity();
         }
     }
 }
