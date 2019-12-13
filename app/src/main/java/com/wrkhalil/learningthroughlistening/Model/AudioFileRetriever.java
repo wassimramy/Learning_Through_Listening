@@ -13,18 +13,17 @@ import java.io.IOException;
 
 public class AudioFileRetriever {
 
+    //Attributes
     private String id;
     private String trackPath;
 
+    //AudioFileRetriever Constructor
     AudioFileRetriever(String id){
-        this.id = id;
-        downloadTrack();
+        this.id = id; //Fetch id
+        downloadTrack(); //Executed to download the audio file temporarily
     }
 
-    public String getTrackPath() {
-        return trackPath;
-    }
-
+    //Executed to download the audio file temporarily
     private void downloadTrack(){
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -35,25 +34,28 @@ public class AudioFileRetriever {
 
         File localFile = null;
         try {
-            localFile = File.createTempFile("audio", "mp3");
+            localFile = File.createTempFile("audio", "mp3"); //Create a temporary .mp3 file
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //Print the error stack in case of a problem
         }
 
         File finalLocalFile = localFile;
         gsReference.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
             // Local temp file has been created
-            AudioFileRetriever.this.trackPath = finalLocalFile.getAbsolutePath();
-            Model.fetchingAudio = true;
-            ChooseDifficultyActivityPresenter.settingButtonsStatus();
+            AudioFileRetriever.this.trackPath = finalLocalFile.getAbsolutePath(); //Return the temporary file path
+            Model.fetchingAudio = true; //Set the fetchingAudio to true to notify the model that the data retrieval state is accomplished successfully
+            ChooseDifficultyActivityPresenter.settingButtonsStatus(); //Try to change the enable state of the buttons
             Log.d("Fetching mp3 File", "Location on mobile device: "
-                    + finalLocalFile.getAbsolutePath());
+                    + finalLocalFile.getAbsolutePath()); //Print the path in log for testing purposes
         }).addOnFailureListener(exception -> {
             // Handle any errors
-            Model.fetchingAudio = false;
-            ChooseDifficultyActivityPresenter.settingButtonsStatus();
-            downloadTrack();
+            Model.fetchingAudio = false;  //Set the fetchingAudio to false to notify the model that the data retrieval state has failed
+            downloadTrack(); //Resend the request
         });
     }
 
+    //Getters
+    public String getTrackPath() {
+        return trackPath;
+    }
 }

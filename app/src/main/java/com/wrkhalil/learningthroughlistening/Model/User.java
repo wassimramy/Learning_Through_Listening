@@ -15,19 +15,19 @@ import java.util.Map;
 
 public class User {
 
+    //Attributes
     public String firebaseID;
     public String fullName;
-    //public String dateOfBirth;
     public String email;
     public int score;
 
+    //User Constructor
     public User() {
     }
 
     public User(String fireBaseID, String fullName, String email) {
         this.firebaseID = fireBaseID;
         this.fullName = fullName;
-        //this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.score = 0;
     }

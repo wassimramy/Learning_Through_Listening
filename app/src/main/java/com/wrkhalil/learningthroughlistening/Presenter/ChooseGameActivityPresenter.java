@@ -9,13 +9,15 @@ import com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity;
 import com.wrkhalil.learningthroughlistening.View.ChooseGameActivity;
 
 public class ChooseGameActivityPresenter {
+
+    //Attributes
     private  ChooseGameActivity view;
     private Model model;
 
-    //Instantiate the presenter
+    //ChooseGameActivityPresenter Constructor
     public ChooseGameActivityPresenter(ChooseGameActivity view) {
-        this.view = view;
-        this.model = new Model();
+        this.view = view; //Fetch view
+        this.model = new Model(); //Instantiate model
     }
 
     //Called to display the items stored in the database in the recyclerView
@@ -24,11 +26,12 @@ public class ChooseGameActivityPresenter {
         recyclerView.setAdapter(videoAdapter); //Update the recyclerView
     }
 
+    //Executed to start the  ChooseDifficultyActivity for the user to choose teh difficulty level
     private void startGameActivity(int position){
         Intent intent = new Intent(view, ChooseDifficultyActivity.class);
-        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        intent.putExtra("Position", position); //Sends the video's id to the PlayGameActivity
         view.startActivity(intent); //Start the activity
-        view.finish();
+        view.finish(); //Destroy the current activity
     }
 
 }

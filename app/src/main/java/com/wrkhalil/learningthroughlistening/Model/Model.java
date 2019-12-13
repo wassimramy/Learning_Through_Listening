@@ -21,10 +21,13 @@ import java.util.List;
 import static com.wrkhalil.learningthroughlistening.Presenter.SignInActivityPresenter.setStartANewGameStatus;
 
 public class Model {
+
+    //Attributes
     public static User operatingUser;
     public static List<Video> videoList = new ArrayList<>();
     public static boolean fetchingTranscript, fetchingAudio = false;
 
+    //Check if any attribute was not fetched correctly
     public boolean checkForNullValues(){
         for (int i = 0 ; i < videoList.size() ; i++){
             if (videoList.get(i).getThumbnailURL() == null ||
@@ -35,10 +38,12 @@ public class Model {
         return false;
     }
 
+    //Executed to increment the number of plays when the user submits its score
     public void incrementNumberOfPlays(int position){
         videoList.get(position).incrementNumberOfPlays();
     }
 
+    //Obfuscate the passed word with underscores
     public String generateUnderscores(String target){
         String result;
         result = "_";
@@ -48,10 +53,12 @@ public class Model {
         return result;
     }
 
+    //Executed to add the earned score when the user submits its score
     public void submitScore(int calculatedScore){
         operatingUser.submitScore(calculatedScore);
     }
 
+    //Retrieve all the videos information
     public void populateVideoListFromFirebase() {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -59,20 +66,20 @@ public class Model {
         setStartANewGameStatus(false);
 
         if (videoList.size()>1){
-            videoList = new ArrayList<>();
+            videoList = new ArrayList<>(); //Re-instantiate the videoList to prevent duplication
         }
         ChildEventListener childEventListener = new ChildEventListener() {
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d("Message From Firebase", s + "");
-                Video video = dataSnapshot.getValue(Video.class);
-                Video videoParsed = new Video(video.id, video.plays);
-                videoList.add(videoParsed);
+                Log.d("Message From Firebase", s + ""); //Displayed for testing purposes
+                Video video = dataSnapshot.getValue(Video.class); //Retrieve the Video object
+                Video videoParsed = new Video(video.id, video.plays); //Parse the returned Video object
+                videoList.add(videoParsed); //Add the Video object to the videoList
                 for (int i = 0 ; i < videoList.size() ; i++){
-                    Log.d("videoList[" + i +"]", videoList.get(i).id + " ");
+                    Log.d("videoList[" + i +"]", videoList.get(i).id + " "); //Displayed for testing purposes
                 }
-                setStartANewGameStatus(true);
+                setStartANewGameStatus(true); //Enable startANewGameButton Status
             }
 
             @Override
@@ -93,14 +100,15 @@ public class Model {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
-                setStartANewGameStatus(false);
+                setStartANewGameStatus(false);  //Disable startANewGameButton Status
                 Log.w("loadPost:onCancelled", databaseError.toException());
             }
 
         };
-        ref.addChildEventListener(childEventListener);
+        ref.addChildEventListener(childEventListener); //Start the transaction request
     }
 
+    //Executed to fetch the user's information
     public void  fetchUserDataFromFirebase(FirebaseUser currentUser) {
         Model.operatingUser = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail());
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -112,19 +120,20 @@ public class Model {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 Model.operatingUser  = dataSnapshot.getValue(User.class);
-                SignInActivityPresenter.printScore(Model.operatingUser.score);
-                Log.d("Operating User Score", Model.operatingUser.score + "");
+                SignInActivityPresenter.printScore(Model.operatingUser.score); //Retrieve the score value stored in Firebase
+                Log.d("Operating User Score", Model.operatingUser.score + ""); //Displayed for testing purposes
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
-                //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                Log.w("Operating User Score", "loadPost:onCancelled", databaseError.toException()); //Displayed for testing purposes
             }
         };
-        usersRef.addValueEventListener(postListener);
+        usersRef.addValueEventListener(postListener); //Start the transaction request
     }
 
+    //Executed to check the signin status of the user in the app
     public FirebaseUser checkSignInStatus() {
 
         // [START declare_auth]
@@ -140,13 +149,13 @@ public class Model {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null){
-            Log.d("Sign In", "No user is logged in");
-            Model.operatingUser = null;
+            Log.d("Sign In", "No user is logged in"); //Displayed for testing purposes
+            Model.operatingUser = null; //Set the user variable to null if the user is not logged in
 
         }
         else{
-            Log.d("Sign In", "A user is logged in");
-            fetchUserDataFromFirebase(currentUser);
+            Log.d("Sign In", "A user is logged in"); //Displayed for testing purposes
+            fetchUserDataFromFirebase(currentUser); //Fetch the user information if a user is logged in
         }
         return currentUser;
     }

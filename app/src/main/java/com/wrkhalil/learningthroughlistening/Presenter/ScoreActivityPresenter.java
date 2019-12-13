@@ -16,27 +16,29 @@ import com.wrkhalil.learningthroughlistening.View.SignInActivity;
 
 public class ScoreActivityPresenter {
 
+    //Attributes
     private ScoreActivity view;
     private Model model;
 
-    //Instantiate the presenter
+    //ScoreActivityPresenter Constructor
     public ScoreActivityPresenter(ScoreActivity view) {
-        this.view = view;
-        this.model = new Model();
+        this.view = view; //Fetch view
+        this.model = new Model(); //Instantiate model
     }
 
+    //Executed if the user chooses to submit its score
     public void submitScore(int calculatedScore){
-        model.submitScore(calculatedScore);
+        model.submitScore(calculatedScore); //Update the user's score
     }
-
+    //Executed if the user chooses to submit its score
     public void incrementNumberOfPlays(int position){
-        model.incrementNumberOfPlays(position);
+        model.incrementNumberOfPlays(position); //Increment the song's plays number
     }
 
     // Back to Choose Game Activity
-    public void goBackToChooseGameActivity() {
+    public void goBackToSignInActivity() {
         Intent intent = new Intent(view, SignInActivity.class);
         view.startActivity(intent); //Start the activity
-        view.finish();
+        view.finish(); //Destroy teh current activity
     }
 }

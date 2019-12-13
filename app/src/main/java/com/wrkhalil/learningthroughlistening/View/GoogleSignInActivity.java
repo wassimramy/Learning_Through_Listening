@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wrkhalil.learningthroughlistening.Model.Model;
+import com.wrkhalil.learningthroughlistening.Presenter.GoogleSignInActivityPresenter;
 import com.wrkhalil.learningthroughlistening.R;
 import com.wrkhalil.learningthroughlistening.Model.User;
 
@@ -39,18 +40,14 @@ public class GoogleSignInActivity extends MainActivity implements
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
-    // [START declare_auth]
-    private FirebaseAuth mAuth;
-    // [END declare_auth]
-
-    private GoogleSignInClient mGoogleSignInClient;
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
+    public TextView mStatusTextView, mDetailTextView;
+    private GoogleSignInActivityPresenter googleSignInActivityPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google);
+        googleSignInActivityPresenter = new GoogleSignInActivityPresenter(this);
 
         // Views
         mStatusTextView = findViewById(R.id.status);
@@ -62,20 +59,8 @@ public class GoogleSignInActivity extends MainActivity implements
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.backButton).setOnClickListener(this);
 
-        // [START config_signin]
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        // [END config_signin]
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        // [START initialize_auth]
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
+        googleSignInActivityPresenter.configSignIn();
+        googleSignInActivityPresenter.initializeAuth();
     }
 
     // [START on_start_check_user]
@@ -83,15 +68,8 @@ public class GoogleSignInActivity extends MainActivity implements
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        /*
-        Intent intent = getIntent();
-        String status = "None";
-        status = intent.getStringExtra("Status");
-        if (status.equals(""))
-         */
-
-        updateUI(currentUser);
+        FirebaseUser currentUser = googleSignInActivityPresenter.mAuth.getCurrentUser();
+        googleSignInActivityPresenter.updateUI(currentUser);
     }
     // [END on_start_check_user]
 
@@ -106,134 +84,27 @@ public class GoogleSignInActivity extends MainActivity implements
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
+                googleSignInActivityPresenter.firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
                 // [START_EXCLUDE]
-                updateUI(null);
+                googleSignInActivityPresenter.updateUI(null);
                 // [END_EXCLUDE]
             }
         }
     }
     // [END onactivityresult]
 
-    // [START auth_with_google]
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-        // [START_EXCLUDE silent]
-        showProgressDialog();
-        // [END_EXCLUDE]
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Toast.makeText(findViewById(R.id.main_layout), "Authentication Failed.", Toast.LENGTH_SHORT).show();
-                            updateUI(null);
-                        }
-
-                        // [START_EXCLUDE]
-                        hideProgressDialog();
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    // [END auth_with_google]
-
-    // [START signin]
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-
-    }
-    // [END signin]
-
-    private void signOut() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google sign out
-        mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
-
-    private void goBackToSignInActivity() {
-        Intent intent = new Intent(this, SignInActivity.class);
-        startActivity(intent);
-        this.finish();
-    }
-
-    private void checkIfUserExists(final FirebaseUser user){
-
-        Model.operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("server/saving-data/fireblog/users");
-        final DatabaseReference usersRef = ref.child(user.getUid());
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChild(user.getUid())) {
-                    Model.operatingUser  = snapshot.child(user.getUid()).getValue(User.class);
-                    Log.d("Account Info Fetched:", Model.operatingUser.fullName + " " + Model.operatingUser.score);
-                }
-                else{
-                    Model.operatingUser = new User(user.getUid(), user.getDisplayName(), user.getEmail());
-                    usersRef.setValue(Model.operatingUser.toMap());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void updateUI(FirebaseUser user) {
-        hideProgressDialog();
-        if (user != null) {
-            //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
-            mStatusTextView.setText(getString(R.string.google_status_fmt, user.getDisplayName()));
-            //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getPhoneNumber()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getEmail()));
-
-            findViewById(R.id.signInAndBack).setVisibility(View.GONE);
-            findViewById(R.id.signOutAndBack).setVisibility(View.VISIBLE);
-
-            checkIfUserExists(user);
-        } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
-
-            findViewById(R.id.signInAndBack).setVisibility(View.VISIBLE);
-            findViewById(R.id.signOutAndBack).setVisibility(View.GONE);
-        }
-    }
-
     @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.signInButton) {
-            signIn();
+            googleSignInActivityPresenter.signIn();
         } else if (i == R.id.signOutButton) {
-            signOut();
+            googleSignInActivityPresenter.signOut();
         } else if (i == R.id.backButton || i == R.id.backWithoutSignInButton) {
-            goBackToSignInActivity();
+            googleSignInActivityPresenter.goBackToSignInActivity();
         }
     }
 
@@ -242,7 +113,7 @@ public class GoogleSignInActivity extends MainActivity implements
     {
         if ((keyCode == KeyEvent.KEYCODE_BACK))
         {
-            goBackToSignInActivity();
+            googleSignInActivityPresenter.goBackToSignInActivity();
         }
         return super.onKeyDown(keyCode, event);
     }

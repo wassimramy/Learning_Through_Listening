@@ -8,7 +8,7 @@ public class BaseApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
-        BaseApplication.context = getApplicationContext();
+        BaseApplication.context = getApplicationContext(); //Return the context
     }
 
     public static Context getAppContext() {

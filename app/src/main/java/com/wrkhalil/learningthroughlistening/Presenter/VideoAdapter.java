@@ -42,9 +42,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ItemViewHold
     //Called to display item details in the recycler view
     @Override
     public void onBindViewHolder(@NonNull VideoAdapter.ItemViewHolder holder, final int position) {
-        holder.itemTitleTextView.setText(list.get(position).getTitle()); //Set the itemTitleTextView in the row layout to "Image " + position to enumerate the pictures
+        holder.itemTitleTextView.setText(list.get(position).getTitle()); //Set the itemTitleTextView to the song's title
 
-        holder.itemDescriptionTextView.setText(list.get(position).getPlays() + " Plays"); //Set the itemDateAndTime in the row layout to the formatted date and time
+        holder.itemDescriptionTextView.setText(list.get(position).getPlays() + " Plays"); //Set the itemDescriptionTextView to the song's number of plays
 
         RequestOptions requestOptions = new RequestOptions(); //Set the options of for the displayed picture
         requestOptions.placeholder(R.drawable.ic_launcher_background); //Picture displayed when the app is fetching the picture
@@ -71,6 +71,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ItemViewHold
 
         ItemViewHolder(View itemView) {
             super(itemView);
+
+            //Views Declaration
             itemImage = itemView.findViewById(R.id.itemImage);
             itemTitleTextView = itemView.findViewById(R.id.itemTitleTextView);
             itemDescriptionTextView = itemView.findViewById(R.id.itemTimeAndDateTextView);

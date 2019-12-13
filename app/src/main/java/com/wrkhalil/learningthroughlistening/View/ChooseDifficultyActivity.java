@@ -30,12 +30,14 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
         chooseDifficultyActivityPresenter = new ChooseDifficultyActivityPresenter(this);
 
         Intent intent = getIntent();
-        position = intent.getIntExtra ("Position", 0); //get the URI value from the previous activity
+        position = intent.getIntExtra ("Position", 0); //get the song's id value from the ChooseGameActivity
 
+        //Buttons declaration
         easyGameButton = findViewById(R.id.easyGameButton);
         mediumGameButton = findViewById(R.id.mediumGameButton);
         hardGameButton = findViewById(R.id.hardGameButton);
 
+        //Buttons Listeners
         easyGameButton.setOnClickListener(this);
         mediumGameButton.setOnClickListener(this);
         hardGameButton.setOnClickListener(this);
@@ -44,6 +46,7 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
         songThumbnail = findViewById(R.id.songThumbnail);
         txtSongTitle = findViewById(R.id.txtSongTitle);
 
+        //Display the song's information
         chooseDifficultyActivityPresenter.updateFields(position);
     }
 
@@ -55,14 +58,14 @@ public class ChooseDifficultyActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.easyGameButton) {
-            chooseDifficultyActivityPresenter.startGameActivity(position, "Easy");
+        if (i == R.id.easyGameButton) { //When the user taps on the easyGameButton
+            chooseDifficultyActivityPresenter.startGameActivity(position, "Easy"); //Pass the song's id and difficulty to the StartGameActivity
         }
-        else if (i == R.id.mediumGameButton) {
-            chooseDifficultyActivityPresenter.startGameActivity(position, "Medium");
+        else if (i == R.id.mediumGameButton) { //When the user taps on the mediumGameButton
+            chooseDifficultyActivityPresenter.startGameActivity(position, "Medium"); //Pass the song's id and difficulty to the StartGameActivity
         }
-        else if (i == R.id.hardGameButton) {
-            chooseDifficultyActivityPresenter.startGameActivity(position, "Hard");
+        else if (i == R.id.hardGameButton) { //When the user taps on the hardGameButton
+            chooseDifficultyActivityPresenter.startGameActivity(position, "Hard"); //Pass the song's id and difficulty to the StartGameActivity
         }
     }
 }

@@ -9,8 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wrkhalil.learningthroughlistening.R;
-import com.wrkhalil.learningthroughlistening.Model.User;
-
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity {
@@ -18,26 +16,22 @@ public class MainActivity extends AppCompatActivity {
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
 
+    //Executed when the user is logging in
     public void showProgressDialog() {
+
+        //Sets the settings for the progress dialog
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             //noinspection deprecation
-            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setMessage("Loading");
             mProgressDialog.setIndeterminate(true);
         }
-
-        mProgressDialog.show();
+        mProgressDialog.show(); //Display the progress dialog
     }
-
+    //Executed after the logging process is done
     public void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
-    public void hideKeyboard(View view) {
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            mProgressDialog.dismiss(); //Destroy the progress dialog
         }
     }
 

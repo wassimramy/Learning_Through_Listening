@@ -18,13 +18,15 @@ import static com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivit
 import static com.wrkhalil.learningthroughlistening.View.ChooseDifficultyActivity.mediumGameButton;
 
 public class ChooseDifficultyActivityPresenter {
+
+    //Attributes
     private ChooseDifficultyActivity view;
     private Model model;
 
-    //Instantiate the presenter
+    //ChooseDifficultyActivityPresenter Constructor
     public ChooseDifficultyActivityPresenter(ChooseDifficultyActivity view) {
-        this.view = view;
-        this.model = new Model();
+        this.view = view; //Fetch View
+        this.model = new Model(); //Instantiate the model
     }
 
     public void updateFields(int position){
@@ -38,40 +40,42 @@ public class ChooseDifficultyActivityPresenter {
                 .apply(requestOptions) // Set the options
                 .into(view.songThumbnail); // The container where the picture is displayed
 
-        view.txtSongTitle.setText(model.videoList.get(position).getTitle());
+        view.txtSongTitle.setText(model.videoList.get(position).getTitle()); //Display the song's title
 
-        settingButtonsStatus();
+        settingButtonsStatus(); //Determine the state of the buttons depending on the data retrieval
 
-        model.videoList.get(position).generateClosedCaption();
-        model.videoList.get(position).downloadAudioFile();
+        model.videoList.get(position).generateClosedCaption(); //Generate new .srt file for the song
+        model.videoList.get(position).downloadAudioFile(); //Download the audio file temporarily
     }
 
+    //Check whether the buttons need to be disabled or enabled depending on the data retrieval status
     public static void settingButtonsStatus(){
 
         String loadingStatement = "Loading Data";
-        if (fetchingTranscript && fetchingAudio){
-            easyGameButton.setEnabled(true);
-            mediumGameButton.setEnabled(true);
-            hardGameButton.setEnabled(true);
-            easyGameButton.setText("Easy");
-            mediumGameButton.setText("Medium");
-            hardGameButton.setText("Hard");
+        if (fetchingTranscript && fetchingAudio){ //Enter if all data is retrieved
+            easyGameButton.setEnabled(true); //Enable the easyGameButton
+            mediumGameButton.setEnabled(true); //Enable the mediumGameButton
+            hardGameButton.setEnabled(true);//Enable the hardGameButton
+            easyGameButton.setText("Easy"); //Set the text to Easy for the easyGameButton instead of the loadingStatement
+            mediumGameButton.setText("Medium"); //Set the text to Medium for the mediumGameButton instead of the loadingStatement
+            hardGameButton.setText("Hard"); //Set the text to Hard for the hardGameButton instead of the loadingStatement
         }
         else{
-            easyGameButton.setEnabled(false);
-            mediumGameButton.setEnabled(false);
-            hardGameButton.setEnabled(false);
-            easyGameButton.setText(loadingStatement);
-            mediumGameButton.setText(loadingStatement);
-            hardGameButton.setText(loadingStatement);
+            easyGameButton.setEnabled(false);//Disable the easyGameButton
+            mediumGameButton.setEnabled(false);//Disable the mediumGameButton
+            hardGameButton.setEnabled(false); //Disable the hardGameButton
+            easyGameButton.setText(loadingStatement); //Set the text to the loadingStatement for the easyGameButton
+            mediumGameButton.setText(loadingStatement); //Set the text to the loadingStatement for the mediumGameButton
+            hardGameButton.setText(loadingStatement); //Set the text to the loadingStatement for the hardGameButton
         }
     }
 
+    //Executed to start the PlayGameActivity for the user to play
     public void startGameActivity(int position, String difficulty){
         Intent intent = new Intent(view, PlayGameActivity.class);
-        intent.putExtra("Position", position); //Sends the URI value to the ShowPictureActivity to fetch the picture
-        intent.putExtra("Difficulty", difficulty); //Sends the URI value to the ShowPictureActivity to fetch the picture
+        intent.putExtra("Position", position); //Sends the video's id to the PlayGameActivity
+        intent.putExtra("Difficulty", difficulty); //Sends the difficulty level to the PlayGameActivity
         view.startActivity(intent); //Start the activity
-        view.finish();
+        view.finish(); //Destroy the current activity
     }
 }
